@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  users_service:
+    build:
+      context: .
+      dockerfile: services/users_service/Dockerfile
+    container_name: users-service
+    ports:
+      - "8001:8000"  # host:container
+    restart: unless-stopped
+
+  rooms_service:
+    build:
+      context: .
+      dockerfile: services/rooms_service/Dockerfile
+    container_name: rooms-service
+    ports:
+      - "8002:8000"
+    restart: unless-stopped
+
+  bookings_service:
+    build:
+      context: .
+      dockerfile: services/bookings_service/Dockerfile
+    container_name: bookings-service
+    ports:
+      - "8003:8000"
+    restart: unless-stopped
+
+  reviews_service:
+    build:
+      context: .
+      dockerfile: services/reviews_service/Dockerfile
+    container_name: reviews-service
+    ports:
+      - "8004:8000"
+    restart: unless-stopped
