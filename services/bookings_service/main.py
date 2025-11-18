@@ -1,7 +1,9 @@
-# services/bookings_service/main.py
-
 from datetime import datetime
 from typing import List, Optional
+
+from . import models
+from .database import engine
+
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -10,9 +12,6 @@ app = FastAPI(
     title="Bookings Service",
     version="0.1.0"
 )
-
-
-# --------- Pydantic models ---------
 
 class BookingCreate(BaseModel):
     room_id: int
@@ -33,8 +32,6 @@ class BookingResponse(BookingCreate):
     status: str = "confirmed"
 
 
-# --------- In-memory "database" ---------
-
 bookings: List[BookingResponse] = []
 next_booking_id: int = 1
 
@@ -44,9 +41,6 @@ def get_booking_or_404(booking_id: int) -> BookingResponse:
         if b.id == booking_id:
             return b
     raise HTTPException(status_code=404, detail="Booking not found")
-
-
-# --------- API endpoints ---------
 
 @app.get("/api/bookings", response_model=List[BookingResponse])
 def list_bookings() -> List[BookingResponse]:

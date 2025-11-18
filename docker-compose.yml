@@ -1,13 +1,28 @@
-version: "3.9"
-
 services:
+  db:
+    image: postgres:16
+    container_name: smartmeetingroom-db
+    environment:
+      POSTGRES_DB: smartmeetingroom
+      POSTGRES_USER: smartuser
+      POSTGRES_PASSWORD: smartpass
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
   users_service:
     build:
       context: .
       dockerfile: services/users_service/Dockerfile
     container_name: users-service
+    environment:
+      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
     ports:
-      - "8001:8000"  # host:container
+      - "8001:8000"
+    depends_on:
+      - db
     restart: unless-stopped
 
   rooms_service:
@@ -15,8 +30,12 @@ services:
       context: .
       dockerfile: services/rooms_service/Dockerfile
     container_name: rooms-service
+    environment:
+      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
     ports:
       - "8002:8000"
+    depends_on:
+      - db
     restart: unless-stopped
 
   bookings_service:
@@ -24,8 +43,12 @@ services:
       context: .
       dockerfile: services/bookings_service/Dockerfile
     container_name: bookings-service
+    environment:
+      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
     ports:
       - "8003:8000"
+    depends_on:
+      - db
     restart: unless-stopped
 
   reviews_service:
@@ -33,6 +56,13 @@ services:
       context: .
       dockerfile: services/reviews_service/Dockerfile
     container_name: reviews-service
+    environment:
+      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
     ports:
       - "8004:8000"
+    depends_on:
+      - db
     restart: unless-stopped
+
+volumes:
+  db_data:

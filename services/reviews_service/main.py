@@ -4,6 +4,10 @@ from typing import List, Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
+from . import models
+from .database import engine
+
+
 app = FastAPI(
     title="Reviews Service",
     version="0.1.0",
