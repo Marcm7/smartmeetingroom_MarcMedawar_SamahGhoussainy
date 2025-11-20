@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+import hashlib
+import os
 
 from . import models
 from .schemas import UserCreate, UserLogin, UserResponse, Token
@@ -16,6 +18,20 @@ router = APIRouter(prefix="/api/users", tags=["users"])
 #   their username.
 # - Other services can treat "access_token" as the authenticated username.
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
+
+# Simple salted password hashing (for assignment/demo purposes)
+PASSWORD_SALT = os.getenv("USER_PASSWORD_SALT", "change-me-in-production")
+
+
+def hash_password(raw_password: str) -> str:
+    """
+    Hash a plaintext password using SHA-256 with a static salt.
+
+    In a real production system, you would use a dedicated password
+    hashing library (e.g., bcrypt/argon2) with per-user salts.
+    """
+    data = (PASSWORD_SALT + raw_password).encode("utf-8")
+    return hashlib.sha256(data).hexdigest()
 
 
 def authenticate_user(db: Session, username: str, password: str) -> models.User | None:
@@ -31,8 +47,11 @@ def authenticate_user(db: Session, username: str, password: str) -> models.User 
     )
     if user is None:
         return None
-    if user.password != password:
+
+    # Compare hashed password with stored value
+    if user.password != hash_password(password):
         return None
+
     return user
 
 
@@ -80,12 +99,15 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     """
     Register a new user account.
 
-    The password is stored in plain text for this assignment. In a production
-    system you would hash it with a strong algorithm (e.g. bcrypt).
+    The password is hashed before storage for this assignment to avoid
+    keeping plaintext credentials. In a production system you would use
+    a stronger password hashing algorithm (e.g. bcrypt/argon2).
     """
+    hashed_pw = hash_password(user.password)
+
     db_user = models.User(
         username=user.username,
-        password=user.password,
+        password=hashed_pw,
         role="regular",
     )
     db.add(db_user)
@@ -141,4 +163,3 @@ def list_users(db: Session = Depends(get_db)):
     """
     users = db.query(models.User).all()
     return users
-

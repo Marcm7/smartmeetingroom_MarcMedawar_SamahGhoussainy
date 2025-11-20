@@ -9,11 +9,18 @@ create, list, retrieve, update, and delete bookings.
 from datetime import datetime
 from typing import List, Optional
 
+import logging
+import os
+from logging.handlers import RotatingFileHandler
+
 from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from starlette.requests import Request
 from pydantic import BaseModel
 
-from . import models
-from .database import engine
+from . import models  # kept for consistency, even if not used directly
+from .database import engine  # kept for consistency, even if not used directly
 
 
 app = FastAPI(
@@ -22,6 +29,74 @@ app = FastAPI(
     description="Handles creation and management of room bookings.",
 )
 
+
+# -------------------------------
+# Exception handlers (Task 7)
+# -------------------------------
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """
+    Handle validation errors in a consistent JSON format.
+    """
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": "Invalid request payload.",
+            "errors": exc.errors(),
+        },
+    )
+
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """
+    Catch-all handler for unexpected server errors.
+    """
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error."},
+    )
+
+
+# -------------------------------
+# Audit logger setup (Task 2)
+# -------------------------------
+
+def get_audit_logger() -> logging.Logger:
+    """
+    Configure and return a logger that writes audit events for
+    the Bookings service into logs/bookings_audit.log.
+    """
+    logger = logging.getLogger("bookings_audit")
+    if logger.handlers:
+        # Already configured (avoid adding handlers twice in reloads)
+        return logger
+
+    logger.setLevel(logging.INFO)
+
+    # Project root: go three levels up from this file
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    logs_dir = os.path.join(base_dir, "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+
+    log_path = os.path.join(logs_dir, "bookings_audit.log")
+    handler = RotatingFileHandler(log_path, maxBytes=1_000_000, backupCount=3)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+    return logger
+
+
+audit_logger = get_audit_logger()
+
+
+# -------------------------------
+# Pydantic schemas
+# -------------------------------
 
 class BookingCreate(BaseModel):
     """
@@ -78,6 +153,10 @@ bookings: List[BookingResponse] = []
 next_booking_id: int = 1
 
 
+# -------------------------------
+# Helper functions
+# -------------------------------
+
 def get_booking_or_404(booking_id: int) -> BookingResponse:
     """
     Retrieve a booking by its identifier or raise a 404 error.
@@ -96,6 +175,10 @@ def get_booking_or_404(booking_id: int) -> BookingResponse:
             return b
     raise HTTPException(status_code=404, detail="Booking not found")
 
+
+# -------------------------------
+# Base API endpoints
+# -------------------------------
 
 @app.get("/api/bookings", response_model=List[BookingResponse])
 def list_bookings() -> List[BookingResponse]:
@@ -143,6 +226,17 @@ def create_booking(payload: BookingCreate) -> BookingResponse:
     )
     next_booking_id += 1
     bookings.append(booking)
+
+    # Audit logging (Task 2)
+    audit_logger.info(
+        "CREATE booking id=%s room_id=%s user=%s start=%s end=%s",
+        booking.id,
+        booking.room_id,
+        booking.username,
+        booking.start_time.isoformat(),
+        booking.end_time.isoformat(),
+    )
+
     return booking
 
 
@@ -198,6 +292,17 @@ def update_booking(booking_id: int, payload: BookingUpdate) -> BookingResponse:
     if payload.purpose is not None:
         booking.purpose = payload.purpose
 
+    # Audit logging (Task 2)
+    audit_logger.info(
+        "UPDATE booking id=%s room_id=%s user=%s start=%s end=%s purpose=%s",
+        booking.id,
+        booking.room_id,
+        booking.username,
+        booking.start_time.isoformat(),
+        booking.end_time.isoformat(),
+        booking.purpose,
+    )
+
     return booking
 
 
@@ -217,4 +322,47 @@ def delete_booking(booking_id: int) -> dict:
     """
     booking = get_booking_or_404(booking_id)
     bookings.remove(booking)
+
+    # Audit logging (Task 2)
+    audit_logger.info(
+        "DELETE booking id=%s room_id=%s user=%s",
+        booking.id,
+        booking.room_id,
+        booking.username,
+    )
+
     return {"message": "Booking cancelled successfully", "booking_id": booking_id}
+
+
+# ------------------------------
+# API v1 versioned endpoints (Task 7)
+# ------------------------------
+
+@app.get("/api/v1/bookings", response_model=List[BookingResponse])
+def list_bookings_v1() -> List[BookingResponse]:
+    """API v1: List all bookings (same logic as /api/bookings)."""
+    return list_bookings()
+
+
+@app.post("/api/v1/bookings", response_model=BookingResponse, status_code=201)
+def create_booking_v1(payload: BookingCreate) -> BookingResponse:
+    """API v1: Create a new booking (same logic as /api/bookings)."""
+    return create_booking(payload)
+
+
+@app.get("/api/v1/bookings/{booking_id}", response_model=BookingResponse)
+def get_booking_v1(booking_id: int) -> BookingResponse:
+    """API v1: Get a single booking by ID."""
+    return get_booking(booking_id)
+
+
+@app.put("/api/v1/bookings/{booking_id}", response_model=BookingResponse)
+def update_booking_v1(booking_id: int, payload: BookingUpdate) -> BookingResponse:
+    """API v1: Update an existing booking."""
+    return update_booking(booking_id, payload)
+
+
+@app.delete("/api/v1/bookings/{booking_id}")
+def delete_booking_v1(booking_id: int) -> dict:
+    """API v1: Delete (cancel) a booking."""
+    return delete_booking(booking_id)

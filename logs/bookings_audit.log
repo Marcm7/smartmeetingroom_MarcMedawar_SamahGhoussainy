@@ -1,0 +1,6 @@
+2025-11-20 22:41:20,637 - INFO - CREATE booking id=1 room_id=1 user=testuser start=2025-01-01T10:00:00 end=2025-01-01T11:00:00
+2025-11-20 22:44:17,596 - INFO - CREATE booking id=1 room_id=1 user=samah start=2025-03-18T10:00:00 end=2025-03-18T11:00:00
+2025-11-20 22:45:11,211 - INFO - UPDATE booking id=1 room_id=1 user=samah start=2025-03-18T10:00:00 end=2025-03-18T11:00:00 purpose=Updated purpose
+2025-11-20 22:46:01,944 - INFO - DELETE booking id=1 room_id=1 user=samah
+2025-11-20 23:05:08,127 - INFO - CREATE booking id=1 room_id=1 user=testuser start=2025-01-01T10:00:00 end=2025-01-01T11:00:00
+2025-11-20 23:13:36,514 - INFO - CREATE booking id=1 room_id=1 user=testuser start=2025-01-01T10:00:00 end=2025-01-01T11:00:00
