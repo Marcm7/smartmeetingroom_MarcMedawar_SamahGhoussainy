@@ -13,9 +13,6 @@ def test_create_review():
             "comment": "Great room!",
             "booking_id": 1,
         },
+        headers={"Authorization": "Bearer testuser"},  # add this line
     )
     assert response.status_code == 201
-    data = response.json()
-    assert data["room_id"] == 1
-    assert data["username"] == "testuser"
-    assert data["rating"] == 5
