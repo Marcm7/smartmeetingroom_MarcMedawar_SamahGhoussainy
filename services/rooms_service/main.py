@@ -9,6 +9,11 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Rooms Service")
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "service": "rooms"}
+
+
 
 @app.post(
     "/api/rooms",

@@ -12,6 +12,19 @@ services:
       - db_data:/var/lib/postgresql/data
     restart: unless-stopped
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    # RabbitMQ protocol
+      - "15672:15672"  # Web UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
   users_service:
     build:
       context: .
@@ -45,10 +58,14 @@ services:
     container_name: bookings-service
     environment:
       DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
+      RABBITMQ_HOST: rabbitmq
     ports:
       - "8003:8000"
     depends_on:
-      - db
+      db:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped
 
   reviews_service:
@@ -58,10 +75,14 @@ services:
     container_name: reviews-service
     environment:
       DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
+      RABBITMQ_HOST: rabbitmq
     ports:
       - "8004:8000"
     depends_on:
-      - db
+      db:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:

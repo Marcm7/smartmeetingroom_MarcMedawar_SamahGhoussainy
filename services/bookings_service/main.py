@@ -4,6 +4,10 @@ from typing import List, Optional
 from . import models
 from .database import engine
 
+import os
+import json
+import pika
+from fastapi.encoders import jsonable_encoder
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -12,6 +16,37 @@ app = FastAPI(
     title="Bookings Service",
     version="0.1.0"
 )
+
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "rabbitmq")
+
+def publish_booking_created(booking_obj):
+    try:
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host=RABBITMQ_HOST)
+        )
+        channel = connection.channel()
+        channel.queue_declare(queue="booking_created", durable=True)
+
+        payload = jsonable_encoder(booking_obj)
+
+        body = json.dumps(payload)
+        channel.basic_publish(
+            exchange="",
+            routing_key="booking_created",
+            body=body,
+            properties=pika.BasicProperties(delivery_mode=2),
+        )
+        connection.close()
+        print("✅ Published booking_created event:", payload)
+
+    except Exception as e:
+        print("❌ Failed to publish event:", str(e))
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "service": "bookings"}
+
 
 class BookingCreate(BaseModel):
     room_id: int
@@ -50,10 +85,8 @@ def list_bookings() -> List[BookingResponse]:
 
 @app.post("/api/bookings", response_model=BookingResponse, status_code=201)
 def create_booking(payload: BookingCreate) -> BookingResponse:
-    """Create a new booking."""
     global next_booking_id
 
-    # (Very simple check: end after start)
     if payload.end_time <= payload.start_time:
         raise HTTPException(status_code=400, detail="end_time must be after start_time")
 
@@ -66,9 +99,16 @@ def create_booking(payload: BookingCreate) -> BookingResponse:
         purpose=payload.purpose,
         status="confirmed",
     )
+
     next_booking_id += 1
     bookings.append(booking)
+
+    publish_booking_created(booking)
+
     return booking
+
+
+
 
 
 @app.get("/api/bookings/{booking_id}", response_model=BookingResponse)
