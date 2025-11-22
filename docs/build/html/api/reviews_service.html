@@ -1,0 +1,507 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>reviews_service package &mdash; Smart Meeting Room Backend 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="rooms_service package" href="rooms_service.html" />
+    <link rel="prev" title="bookings_service package" href="bookings_service.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Smart Meeting Room Backend
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">services</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bookings_service.html">bookings_service package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">reviews_service package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-reviews_service.database">reviews_service.database module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#reviews_service.database.get_db"><code class="docutils literal notranslate"><span class="pre">get_db()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-reviews_service.main">reviews_service.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.ReviewCreate"><code class="docutils literal notranslate"><span class="pre">ReviewCreate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.ReviewResponse"><code class="docutils literal notranslate"><span class="pre">ReviewResponse</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.ReviewUpdate"><code class="docutils literal notranslate"><span class="pre">ReviewUpdate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.create_review"><code class="docutils literal notranslate"><span class="pre">create_review()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.delete_review"><code class="docutils literal notranslate"><span class="pre">delete_review()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.get_review_or_404"><code class="docutils literal notranslate"><span class="pre">get_review_or_404()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.list_room_reviews"><code class="docutils literal notranslate"><span class="pre">list_room_reviews()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.update_review"><code class="docutils literal notranslate"><span class="pre">update_review()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-reviews_service">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rooms_service.html">rooms_service package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users_service.html">users_service package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Smart Meeting Room Backend</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">services</a></li>
+      <li class="breadcrumb-item active">reviews_service package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/reviews_service.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="reviews-service-package">
+<h1>reviews_service package<a class="headerlink" href="#reviews-service-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-reviews_service.database">
+<span id="reviews-service-database-module"></span><h2>reviews_service.database module<a class="headerlink" href="#module-reviews_service.database" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="reviews_service.database.get_db">
+<span class="sig-prename descclassname"><span class="pre">reviews_service.database.</span></span><span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reviews_service/database.html#get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.database.get_db" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-reviews_service.main">
+<span id="reviews-service-main-module"></span><h2>reviews_service.main module<a class="headerlink" href="#module-reviews_service.main" title="Link to this heading"></a></h2>
+<p>Reviews Service</p>
+<p>This module defines the FastAPI service responsible for handling room reviews
+in the Smart Meeting Room system. It exposes endpoints to create, list,
+update, and delete reviews associated with room bookings.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewCreate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">ReviewCreate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rating</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ge</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">ge</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Le</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">le</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">5</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reviews_service/main.html#ReviewCreate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.ReviewCreate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Schema for creating a new review.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewCreate.username">
+<span class="sig-name descname"><span class="pre">username</span></span><a class="headerlink" href="#reviews_service.main.ReviewCreate.username" title="Link to this definition"></a></dt>
+<dd><p>Username of the reviewer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewCreate.rating">
+<span class="sig-name descname"><span class="pre">rating</span></span><a class="headerlink" href="#reviews_service.main.ReviewCreate.rating" title="Link to this definition"></a></dt>
+<dd><p>Integer rating between 1 and 5 inclusive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewCreate.comment">
+<span class="sig-name descname"><span class="pre">comment</span></span><a class="headerlink" href="#reviews_service.main.ReviewCreate.comment" title="Link to this definition"></a></dt>
+<dd><p>Optional free-text comment about the room/booking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewCreate.booking_id">
+<span class="sig-name descname"><span class="pre">booking_id</span></span><a class="headerlink" href="#reviews_service.main.ReviewCreate.booking_id" title="Link to this definition"></a></dt>
+<dd><p>Identifier of the booking this review is linked to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">booking_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">comment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewCreate.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#reviews_service.main.ReviewCreate.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">rating</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewResponse">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">ReviewResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">review_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rating</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reviews_service/main.html#ReviewResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.ReviewResponse" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Schema returned by the reviews API endpoints.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewResponse.review_id">
+<span class="sig-name descname"><span class="pre">review_id</span></span><a class="headerlink" href="#reviews_service.main.ReviewResponse.review_id" title="Link to this definition"></a></dt>
+<dd><p>Unique identifier of the review.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewResponse.room_id">
+<span class="sig-name descname"><span class="pre">room_id</span></span><a class="headerlink" href="#reviews_service.main.ReviewResponse.room_id" title="Link to this definition"></a></dt>
+<dd><p>Identifier of the room being reviewed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewResponse.username">
+<span class="sig-name descname"><span class="pre">username</span></span><a class="headerlink" href="#reviews_service.main.ReviewResponse.username" title="Link to this definition"></a></dt>
+<dd><p>Username of the reviewer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewResponse.rating">
+<span class="sig-name descname"><span class="pre">rating</span></span><a class="headerlink" href="#reviews_service.main.ReviewResponse.rating" title="Link to this definition"></a></dt>
+<dd><p>Rating given to the room.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewResponse.comment">
+<span class="sig-name descname"><span class="pre">comment</span></span><a class="headerlink" href="#reviews_service.main.ReviewResponse.comment" title="Link to this definition"></a></dt>
+<dd><p>Optional textual comment describing the experience.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewResponse.booking_id">
+<span class="sig-name descname"><span class="pre">booking_id</span></span><a class="headerlink" href="#reviews_service.main.ReviewResponse.booking_id" title="Link to this definition"></a></dt>
+<dd><p>Identifier of the associated booking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewResponse.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#reviews_service.main.ReviewResponse.created_at" title="Link to this definition"></a></dt>
+<dd><p>UTC timestamp when the review was created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">booking_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">comment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">created_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#reviews_service.main.ReviewResponse.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">rating</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">review_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">room_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id10" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewUpdate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">ReviewUpdate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">rating</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ge</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">ge</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Le</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">le</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">5</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reviews_service/main.html#ReviewUpdate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.ReviewUpdate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Schema for updating an existing review.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewUpdate.rating">
+<span class="sig-name descname"><span class="pre">rating</span></span><a class="headerlink" href="#reviews_service.main.ReviewUpdate.rating" title="Link to this definition"></a></dt>
+<dd><p>Optional new rating between 1 and 5 inclusive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewUpdate.comment">
+<span class="sig-name descname"><span class="pre">comment</span></span><a class="headerlink" href="#reviews_service.main.ReviewUpdate.comment" title="Link to this definition"></a></dt>
+<dd><p>Optional new comment text to replace the old one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">comment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id11" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewUpdate.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#reviews_service.main.ReviewUpdate.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">rating</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reviews_service.main.create_review">
+<span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">create_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#reviews_service.main.ReviewCreate" title="reviews_service.main.ReviewCreate"><span class="pre">ReviewCreate</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse"><span class="pre">ReviewResponse</span></a></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#create_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.create_review" title="Link to this definition"></a></dt>
+<dd><p>Create a new review for a given room.</p>
+<p>This endpoint records a review associated with a specific room and booking.
+It validates the rating range and stores the review in the in-memory list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>room_id</strong> – Identifier of the room being reviewed.</p></li>
+<li><p><strong>payload</strong> – ReviewCreate object containing username, rating, comment,
+and booking identifier.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created review including its generated identifier
+and creation timestamp.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse">ReviewResponse</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reviews_service.main.delete_review">
+<span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">delete_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#delete_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.delete_review" title="Link to this definition"></a></dt>
+<dd><p>Delete an existing review.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>review_id</strong> – Identifier of the review to delete.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A confirmation message including the identifier of the deleted review.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – If the review does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reviews_service.main.get_review_or_404">
+<span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">get_review_or_404</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse"><span class="pre">ReviewResponse</span></a></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#get_review_or_404"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.get_review_or_404" title="Link to this definition"></a></dt>
+<dd><p>Retrieve a review by its identifier or raise a 404 error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>review_id</strong> – Unique identifier of the review to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The matching review object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse">ReviewResponse</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – If no review exists with the given identifier.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reviews_service.main.list_room_reviews">
+<span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">list_room_reviews</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse"><span class="pre">ReviewResponse</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#list_room_reviews"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.list_room_reviews" title="Link to this definition"></a></dt>
+<dd><p>List all reviews for a specific room.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>room_id</strong> – Identifier of the room whose reviews should be returned.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>All reviews that belong to the specified room.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse">ReviewResponse</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reviews_service.main.update_review">
+<span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">update_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#reviews_service.main.ReviewUpdate" title="reviews_service.main.ReviewUpdate"><span class="pre">ReviewUpdate</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse"><span class="pre">ReviewResponse</span></a></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#update_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.update_review" title="Link to this definition"></a></dt>
+<dd><p>Update the rating and/or comment of an existing review.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>review_id</strong> – Identifier of the review that should be updated.</p></li>
+<li><p><strong>payload</strong> – ReviewUpdate object containing the new rating and/or comment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated review object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse">ReviewResponse</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – If the review does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-reviews_service">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-reviews_service" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="bookings_service.html" class="btn btn-neutral float-left" title="bookings_service package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rooms_service.html" class="btn btn-neutral float-right" title="rooms_service package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Samah Ghoussainy &amp; Marc Medawar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

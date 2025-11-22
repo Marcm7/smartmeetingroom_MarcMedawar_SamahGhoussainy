@@ -1,0 +1,483 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bookings_service package &mdash; Smart Meeting Room Backend 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="reviews_service package" href="reviews_service.html" />
+    <link rel="prev" title="services" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Smart Meeting Room Backend
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">services</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">bookings_service package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bookings_service.database">bookings_service.database module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.database.get_db"><code class="docutils literal notranslate"><span class="pre">get_db()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bookings_service.main">bookings_service.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.BookingCreate"><code class="docutils literal notranslate"><span class="pre">BookingCreate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.BookingResponse"><code class="docutils literal notranslate"><span class="pre">BookingResponse</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.BookingUpdate"><code class="docutils literal notranslate"><span class="pre">BookingUpdate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.create_booking"><code class="docutils literal notranslate"><span class="pre">create_booking()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.delete_booking"><code class="docutils literal notranslate"><span class="pre">delete_booking()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.get_booking"><code class="docutils literal notranslate"><span class="pre">get_booking()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.get_booking_or_404"><code class="docutils literal notranslate"><span class="pre">get_booking_or_404()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.list_bookings"><code class="docutils literal notranslate"><span class="pre">list_bookings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.update_booking"><code class="docutils literal notranslate"><span class="pre">update_booking()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bookings_service">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reviews_service.html">reviews_service package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rooms_service.html">rooms_service package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users_service.html">users_service package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Smart Meeting Room Backend</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">services</a></li>
+      <li class="breadcrumb-item active">bookings_service package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/bookings_service.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bookings-service-package">
+<h1>bookings_service package<a class="headerlink" href="#bookings-service-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-bookings_service.database">
+<span id="bookings-service-database-module"></span><h2>bookings_service.database module<a class="headerlink" href="#module-bookings_service.database" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.database.get_db">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.database.</span></span><span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bookings_service/database.html#get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.database.get_db" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bookings_service.main">
+<span id="bookings-service-main-module"></span><h2>bookings_service.main module<a class="headerlink" href="#module-bookings_service.main" title="Link to this heading"></a></h2>
+<p>Bookings Service</p>
+<p>This module defines the FastAPI service responsible for managing room
+bookings in the Smart Meeting Room system. It exposes endpoints to
+create, list, retrieve, update, and delete bookings.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="bookings_service.main.BookingCreate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">BookingCreate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">purpose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bookings_service/main.html#BookingCreate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.BookingCreate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Schema for creating a new booking.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingCreate.room_id">
+<span class="sig-name descname"><span class="pre">room_id</span></span><a class="headerlink" href="#bookings_service.main.BookingCreate.room_id" title="Link to this definition"></a></dt>
+<dd><p>Identifier of the room being booked.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingCreate.username">
+<span class="sig-name descname"><span class="pre">username</span></span><a class="headerlink" href="#bookings_service.main.BookingCreate.username" title="Link to this definition"></a></dt>
+<dd><p>Username of the person making the booking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingCreate.start_time">
+<span class="sig-name descname"><span class="pre">start_time</span></span><a class="headerlink" href="#bookings_service.main.BookingCreate.start_time" title="Link to this definition"></a></dt>
+<dd><p>Start datetime of the booking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingCreate.end_time">
+<span class="sig-name descname"><span class="pre">end_time</span></span><a class="headerlink" href="#bookings_service.main.BookingCreate.end_time" title="Link to this definition"></a></dt>
+<dd><p>End datetime of the booking (must be after start_time).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingCreate.purpose">
+<span class="sig-name descname"><span class="pre">purpose</span></span><a class="headerlink" href="#bookings_service.main.BookingCreate.purpose" title="Link to this definition"></a></dt>
+<dd><p>Optional free-text description of the meeting purpose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">end_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingCreate.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#bookings_service.main.BookingCreate.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">purpose</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">room_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">start_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bookings_service.main.BookingResponse">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">BookingResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">purpose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'confirmed'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bookings_service/main.html#BookingResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.BookingResponse" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bookings_service.main.BookingCreate" title="bookings_service.main.BookingCreate"><code class="xref py py-class docutils literal notranslate"><span class="pre">BookingCreate</span></code></a></p>
+<p>Schema returned by the bookings API endpoints.</p>
+<dl class="simple">
+<dt>Extends:</dt><dd><p>BookingCreate: Includes all fields used for creation.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingResponse.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#bookings_service.main.BookingResponse.id" title="Link to this definition"></a></dt>
+<dd><p>Unique identifier of the booking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingResponse.status">
+<span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#bookings_service.main.BookingResponse.status" title="Link to this definition"></a></dt>
+<dd><p>Current status of the booking (e.g., “confirmed”).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#bookings_service.main.BookingResponse.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bookings_service.main.BookingUpdate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">BookingUpdate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">purpose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bookings_service/main.html#BookingUpdate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.BookingUpdate" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Schema for updating an existing booking.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingUpdate.start_time">
+<span class="sig-name descname"><span class="pre">start_time</span></span><a class="headerlink" href="#bookings_service.main.BookingUpdate.start_time" title="Link to this definition"></a></dt>
+<dd><p>Optional new start datetime of the booking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingUpdate.end_time">
+<span class="sig-name descname"><span class="pre">end_time</span></span><a class="headerlink" href="#bookings_service.main.BookingUpdate.end_time" title="Link to this definition"></a></dt>
+<dd><p>Optional new end datetime of the booking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.datetime | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingUpdate.purpose">
+<span class="sig-name descname"><span class="pre">purpose</span></span><a class="headerlink" href="#bookings_service.main.BookingUpdate.purpose" title="Link to this definition"></a></dt>
+<dd><p>Optional new purpose text for the booking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">end_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bookings_service.main.BookingUpdate.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#bookings_service.main.BookingUpdate.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">purpose</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">start_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.create_booking">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">create_booking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bookings_service.main.BookingCreate" title="bookings_service.main.BookingCreate"><span class="pre">BookingCreate</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse"><span class="pre">BookingResponse</span></a></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#create_booking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.create_booking" title="Link to this definition"></a></dt>
+<dd><p>Create a new booking.</p>
+<p>Validates that the end time is strictly after the start time, then
+stores the booking in the in-memory list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>payload</strong> – BookingCreate object containing room, user, time range,
+and optional purpose.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The created booking including its generated
+identifier and status.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse">BookingResponse</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – If the time interval is invalid (end before or equal to start).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.delete_booking">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">delete_booking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#delete_booking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.delete_booking" title="Link to this definition"></a></dt>
+<dd><p>Cancel (delete) an existing booking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>booking_id</strong> – Identifier of the booking to delete.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A confirmation message containing the identifier of the deleted booking.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – If the booking does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.get_booking">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">get_booking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse"><span class="pre">BookingResponse</span></a></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#get_booking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.get_booking" title="Link to this definition"></a></dt>
+<dd><p>Retrieve a single booking by its identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>booking_id</strong> – Identifier of the booking to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The matching booking.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse">BookingResponse</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – If the booking does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.get_booking_or_404">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">get_booking_or_404</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse"><span class="pre">BookingResponse</span></a></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#get_booking_or_404"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.get_booking_or_404" title="Link to this definition"></a></dt>
+<dd><p>Retrieve a booking by its identifier or raise a 404 error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>booking_id</strong> – Unique identifier of the booking to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The matching booking object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse">BookingResponse</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – If no booking exists with the given identifier.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.list_bookings">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">list_bookings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse"><span class="pre">BookingResponse</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#list_bookings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.list_bookings" title="Link to this definition"></a></dt>
+<dd><p>List all bookings currently stored in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of all bookings.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse">BookingResponse</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.update_booking">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">update_booking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bookings_service.main.BookingUpdate" title="bookings_service.main.BookingUpdate"><span class="pre">BookingUpdate</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse"><span class="pre">BookingResponse</span></a></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#update_booking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.update_booking" title="Link to this definition"></a></dt>
+<dd><p>Update an existing booking.</p>
+<p>Allows changing the start time, end time, and/or purpose while
+ensuring that the resulting time interval remains valid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>booking_id</strong> – Identifier of the booking to update.</p></li>
+<li><p><strong>payload</strong> – BookingUpdate object with new values for the booking.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated booking.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse">BookingResponse</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – If the updated time interval is invalid or the booking does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-bookings_service">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bookings_service" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="services" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="reviews_service.html" class="btn btn-neutral float-right" title="reviews_service package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Samah Ghoussainy &amp; Marc Medawar.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
