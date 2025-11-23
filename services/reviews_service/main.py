@@ -23,18 +23,48 @@ Authentication & Authorization (Part 12)
 from datetime import datetime
 from typing import List, Optional
 
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+import os, json, pika, threading
+from pydantic import BaseModel, Field, field_validator
+from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from . import models
 from .database import engine
-
 
 app = FastAPI(
     title="Reviews Service",
     version="0.1.0",
     description="Handles room reviews for the Smart Meeting Room system.",
 )
+
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "rabbitmq")
+
+bearer_scheme = HTTPBearer(auto_error=True)
+
+def get_current_username(
+    creds: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> str:
+    """
+    Extract the username from the Authorization header.
+
+    Expected header:
+        Authorization: Bearer <username>
+
+    Returns:
+        str: authenticated username
+    """
+    token = creds.credentials.strip()
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid bearer token.",
+        )
+    return token
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "service": "reviews"}
 
 class ReviewCreate(BaseModel):
     """
@@ -72,7 +102,6 @@ class ReviewCreate(BaseModel):
         cleaned = value.strip()
         lowered = cleaned.lower()
 
-        # Very simple blacklist of suspicious SQL tokens/sequences
         dangerous_tokens = [
             "--",
             ";--",
@@ -164,7 +193,6 @@ class ReviewResponse(BaseModel):
     created_at: datetime
 
 
-# In-memory storage for reviews; in a real deployment this would be backed by a database.
 reviews: List[ReviewResponse] = []
 _next_review_id: int = 1
 
@@ -187,6 +215,7 @@ def get_review_or_404(review_id: int) -> ReviewResponse:
             return r
     raise HTTPException(status_code=404, detail="Review not found")
 
+
 def start_booking_consumer():
     try:
         connection = pika.BlockingConnection(
@@ -208,7 +237,6 @@ def start_booking_consumer():
 
     except Exception as e:
         print("❌ Reviews-service consumer error:", repr(e))
-
 
 
 @app.on_event("startup")
@@ -358,5 +386,3 @@ async def delete_review(
 
     reviews.remove(review)
     return {"message": "Review deleted successfully", "review_id": review_id}
-
-

@@ -11,19 +11,40 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     restart: unless-stopped
+    networks: [appnet]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smartuser -d smartmeetingroom"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  db_init:
+    build:
+      context: .
+      dockerfile: Dockerfile.db_init
+    container_name: db-init
+    environment:
+      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
+    depends_on:
+      db:
+        condition: service_healthy   # ✅ wait for DB really ready
+    command: ["python", "db_init.py"]
+    restart: "no"
+    networks: [appnet]
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"    # RabbitMQ protocol
-      - "15672:15672"  # Web UI
+      - "5672:5672"
+      - "15672:15672"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 5s
       timeout: 5s
       retries: 10
     restart: unless-stopped
+    networks: [appnet]
 
   users_service:
     build:
@@ -35,21 +56,55 @@ services:
     ports:
       - "8001:8000"
     depends_on:
-      - db
+      db_init:
+        condition: service_completed_successfully
     restart: unless-stopped
+    networks: [appnet]
 
-  rooms_service:
+  # --------- ROOMS: replicated instances (no host ports) ---------
+  rooms_service_1:
     build:
       context: .
       dockerfile: services/rooms_service/Dockerfile
-    container_name: rooms-service
+    container_name: rooms-service-1
     environment:
       DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
-    ports:
-      - "8002:8000"
+    expose:
+      - "8000"
     depends_on:
-      - db
+      db_init:
+        condition: service_completed_successfully
     restart: unless-stopped
+    networks: [appnet]
+
+  rooms_service_2:
+    build:
+      context: .
+      dockerfile: services/rooms_service/Dockerfile
+    container_name: rooms-service-2
+    environment:
+      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
+    expose:
+      - "8000"
+    depends_on:
+      db_init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    networks: [appnet]
+
+  # --------- NGINX gateway for rooms load balancing ---------
+  nginx_rooms:
+    image: nginx:alpine
+    container_name: nginx-rooms-lb
+    ports:
+      - "8002:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - rooms_service_1
+      - rooms_service_2
+    restart: unless-stopped
+    networks: [appnet]
 
   bookings_service:
     build:
@@ -62,11 +117,12 @@ services:
     ports:
       - "8003:8000"
     depends_on:
-      db:
-        condition: service_started
+      db_init:
+        condition: service_completed_successfully
       rabbitmq:
         condition: service_healthy
     restart: unless-stopped
+    networks: [appnet]
 
   reviews_service:
     build:
@@ -79,11 +135,16 @@ services:
     ports:
       - "8004:8000"
     depends_on:
-      db:
-        condition: service_started
+      db_init:
+        condition: service_completed_successfully
       rabbitmq:
         condition: service_healthy
     restart: unless-stopped
+    networks: [appnet]
 
 volumes:
   db_data:
+
+networks:
+  appnet:
+    driver: bridge

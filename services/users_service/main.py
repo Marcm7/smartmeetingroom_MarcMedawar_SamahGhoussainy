@@ -13,10 +13,6 @@ from . import models
 from .database import engine
 from .routes import router as users_router
 
-# Create all database tables for the User model if they do not exist yet.
-models.Base.metadata.create_all(bind=engine)
-
 app = FastAPI(title="Users Service")
 
-# Mount the users router so that all user endpoints are exposed under this app.
 app.include_router(users_router)
