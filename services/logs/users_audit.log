@@ -1,0 +1,13 @@
+2025-11-26 22:52:59,590 - INFO - method=POST path=/api/users user=anonymous status=201 duration_ms=13.53
+2025-11-26 22:52:59,605 - INFO - method=GET path=/api/users user=anonymous status=200 duration_ms=4.59
+2025-11-26 22:53:14,016 - INFO - method=POST path=/api/users user=anonymous status=201 duration_ms=9.91
+2025-11-26 22:53:14,029 - INFO - method=GET path=/api/users user=anonymous status=200 duration_ms=3.81
+2025-11-26 22:57:54,648 - INFO - method=POST path=/api/users user=anonymous status=201 duration_ms=28.67
+2025-11-26 22:58:24,618 - INFO - method=POST path=/api/users/login user=anonymous status=401 duration_ms=14.37
+2025-11-26 22:58:47,937 - INFO - method=POST path=/api/users/login user=samah status=401 duration_ms=6.98
+2025-11-26 22:58:59,906 - INFO - method=POST path=/api/users/login user=samah status=401 duration_ms=6.22
+2025-11-26 23:04:35,548 - INFO - method=GET path=/api/users user=samah status=200 duration_ms=7.15
+2025-11-26 23:05:18,540 - INFO - method=POST path=/api/users user=samah status=201 duration_ms=5.93
+2025-11-26 23:06:06,399 - INFO - method=POST path=/api/users/login user=anonymous status=401 duration_ms=6.21
+2025-11-26 23:14:00,610 - INFO - method=GET path=/docs user=anonymous status=200 duration_ms=0.92
+2025-11-26 23:14:01,799 - INFO - method=GET path=/openapi.json user=anonymous status=200 duration_ms=30.46

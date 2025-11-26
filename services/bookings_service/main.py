@@ -9,24 +9,109 @@ create, list, retrieve, update, and delete bookings.
 from datetime import datetime
 from typing import List, Optional
 
-from . import models
-from .database import engine
+import logging
+import os
+import time
+from logging.handlers import RotatingFileHandler
 
-
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-from starlette.requests import Request
 from pydantic import BaseModel
 
 from . import models  # kept for consistency, even if not used directly
 from .database import engine  # kept for consistency, even if not used directly
+from .exception_handlers import (
+    validation_exception_handler,
+    general_exception_handler,
+)
 
+
+# -------------------------------
+# Audit logger setup (Task 2)
+# -------------------------------
+
+def get_audit_logger() -> logging.Logger:
+    """
+    Configure and return a logger that writes audit events for
+    the Bookings service into <project_root>/logs/bookings_audit.log.
+    """
+    logger = logging.getLogger("bookings_audit")
+    if logger.handlers:
+        # Already configured (avoid adding handlers twice in reloads)
+        return logger
+
+    logger.setLevel(logging.INFO)
+
+    # Project root: two levels up from this file
+    # services/bookings_service/main.py -> services -> project_root
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    logs_dir = os.path.join(base_dir, "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+
+    log_path = os.path.join(logs_dir, "bookings_audit.log")
+    handler = RotatingFileHandler(log_path, maxBytes=1_000_000, backupCount=3)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+    return logger
+
+
+audit_logger = get_audit_logger()
+
+
+# -------------------------------
+# FastAPI application
+# -------------------------------
 
 app = FastAPI(
     title="Bookings Service",
-    version="0.1.0"
+    version="0.1.0",
+    description="Handles creation and management of room bookings.",
 )
+
+# Global exception handlers (Task 7)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
+
+
+# Auditing middleware (Task 2)
+@app.middleware("http")
+async def audit_log_middleware(request: Request, call_next):
+    """
+    Middleware that logs each HTTP request with method, path, user,
+    status code, and processing time.
+    """
+    start = time.perf_counter()
+
+    # Extract a simple user identity from Authorization header (if present)
+    auth_header = request.headers.get("authorization", "")
+    # Expecting: "Bearer <username>" in this design
+    username = "anonymous"
+    if auth_header.lower().startswith("bearer "):
+        username = auth_header.split(" ", 1)[1].strip() or "anonymous"
+
+    # Process request
+    response = await call_next(request)
+    duration_ms = (time.perf_counter() - start) * 1000
+
+    audit_logger.info(
+        "method=%s path=%s user=%s status=%s duration_ms=%.2f",
+        request.method,
+        request.url.path,
+        username,
+        response.status_code,
+        duration_ms,
+    )
+
+    return response
+
+
+# -------------------------------
+# Pydantic schemas
+# -------------------------------
 
 class BookingCreate(BaseModel):
     """
@@ -123,7 +208,23 @@ def list_bookings() -> List[BookingResponse]:
 
 @app.post("/api/bookings", response_model=BookingResponse, status_code=201)
 def create_booking(payload: BookingCreate) -> BookingResponse:
-    """Create a new booking."""
+    """
+    Create a new booking.
+
+    Validates that the end time is strictly after the start time, then
+    stores the booking in the in-memory list.
+
+    Args:
+        payload: BookingCreate object containing room, user, time range,
+            and optional purpose.
+
+    Returns:
+        BookingResponse: The created booking including its generated
+        identifier and status.
+
+    Raises:
+        HTTPException: If the time interval is invalid (end before or equal to start).
+    """
     global next_booking_id
 
     if payload.end_time <= payload.start_time:
@@ -138,13 +239,20 @@ def create_booking(payload: BookingCreate) -> BookingResponse:
         purpose=payload.purpose,
         status="confirmed",
     )
-
     next_booking_id += 1
     bookings.append(booking)
+
+    # Audit logging (Task 2)
+    audit_logger.info(
+        "CREATE booking id=%s room_id=%s user=%s start=%s end=%s",
+        booking.id,
+        booking.room_id,
+        booking.username,
+        booking.start_time.isoformat(),
+        booking.end_time.isoformat(),
+    )
+
     return booking
-
-
-
 
 
 @app.get("/api/bookings/{booking_id}", response_model=BookingResponse)
@@ -191,7 +299,7 @@ def update_booking(booking_id: int, payload: BookingUpdate) -> BookingResponse:
         # If both start and end are provided in the payload.
         if payload.start_time is not None and payload.end_time <= payload.start_time:
             raise HTTPException(status_code=400, detail="end_time must be after start_time")
-        # If only end_time is provided, compare with existing start_time.
+        # If only end_time is provided, compare with existing (possibly updated) start_time.
         if payload.start_time is None and payload.end_time <= booking.start_time:
             raise HTTPException(status_code=400, detail="end_time must be after start_time")
         booking.end_time = payload.end_time

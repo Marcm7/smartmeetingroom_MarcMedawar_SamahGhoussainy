@@ -1,0 +1,4 @@
+2025-11-26 22:52:59,481 - INFO - CREATE booking id=1 room_id=1 user=testuser start=2025-01-01T10:00:00 end=2025-01-01T11:00:00
+2025-11-26 22:52:59,482 - INFO - method=POST path=/api/bookings user=anonymous status=201 duration_ms=4.24
+2025-11-26 22:53:13,931 - INFO - CREATE booking id=1 room_id=1 user=testuser start=2025-01-01T10:00:00 end=2025-01-01T11:00:00
+2025-11-26 22:53:13,934 - INFO - method=POST path=/api/bookings user=anonymous status=201 duration_ms=5.95

@@ -6,69 +6,110 @@ in the Smart Meeting Room system. It exposes endpoints to create new
 rooms and list all existing rooms stored in the database.
 """
 
-from fastapi import FastAPI, Depends, status
-from sqlalchemy.orm import Session
+import logging
+import os
 import time
-from typing import Any, Dict, Tuple, List
-import socket
+from logging.handlers import RotatingFileHandler
+
+from fastapi import FastAPI, Depends, Request, status
+from fastapi.exceptions import RequestValidationError
+from sqlalchemy.orm import Session
 
 from .schemas import RoomCreate, RoomResponse
 from . import models
 from .database import engine, get_db
+from .exception_handlers import (
+    validation_exception_handler,
+    general_exception_handler,
+)
 
+
+# -------------------------------
+# Audit logger setup (Part II – Auditing & Logging)
+# -------------------------------
+
+def get_audit_logger() -> logging.Logger:
+    """
+    Configure and return a logger that writes audit events for
+    the Rooms service into <project_root>/logs/rooms_audit.log.
+    """
+    logger = logging.getLogger("rooms_audit")
+    if logger.handlers:
+        # Already configured (avoid adding handlers twice in reloads)
+        return logger
+
+    logger.setLevel(logging.INFO)
+
+    # Project root: two levels up from this file
+    # services/rooms_service/main.py -> services -> project_root
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    logs_dir = os.path.join(base_dir, "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+
+    log_path = os.path.join(logs_dir, "rooms_audit.log")
+    handler = RotatingFileHandler(log_path, maxBytes=1_000_000, backupCount=3)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+    return logger
+
+
+audit_logger = get_audit_logger()
+
+
+# -------------------------------
+# FastAPI application
+# -------------------------------
+
+# Create all database tables for the Room model if they do not exist yet.
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Rooms Service",
     description="Handles creation and retrieval of rooms in the system.",
 )
 
+# Global exception handlers (Part 7 – Advanced Development Practices)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
+
+
+# Auditing middleware (Part II – Auditing & Logging)
 @app.middleware("http")
-async def add_instance_header(request, call_next):
+async def audit_log_middleware(request: Request, call_next):
+    """
+    Middleware that logs each HTTP request with method, path, status,
+    and processing time. User identity is logged if provided in the
+    Authorization header as a Bearer token.
+    """
+    start = time.perf_counter()
+
+    auth_header = request.headers.get("authorization", "")
+    username = "anonymous"
+    if auth_header.lower().startswith("bearer "):
+        username = auth_header.split(" ", 1)[1].strip() or "anonymous"
+
     response = await call_next(request)
-    response.headers["X-Instance"] = socket.gethostname()
+    duration_ms = (time.perf_counter() - start) * 1000
+
+    audit_logger.info(
+        "method=%s path=%s user=%s status=%s duration_ms=%.2f",
+        request.method,
+        request.url.path,
+        username,
+        response.status_code,
+        duration_ms,
+    )
+
     return response
 
 
-CACHE: Dict[str, Tuple[float, Any]] = {}
-CACHE_TTL = 30  # seconds
-
-
-def cache_get(key: str):
-    """
-    Retrieve a cached value if not expired.
-    Returns None if missing or expired.
-    """
-    item = CACHE.get(key)
-    if not item:
-        return None
-
-    ts, data = item
-    if time.time() - ts > CACHE_TTL:
-        CACHE.pop(key, None)
-        return None
-
-    return data
-
-
-def cache_set(key: str, data: Any):
-    """Store value in cache with current timestamp."""
-    CACHE[key] = (time.time(), data)
-
-
-def cache_invalidate(prefix: str = ""):
-    """
-    Invalidate cached keys that start with a prefix.
-    Useful when data changes.
-    """
-    keys = [k for k in CACHE if k.startswith(prefix)]
-    for k in keys:
-        CACHE.pop(k, None)
-
-
-@app.get("/health")
-def health_check():
-    return {"status": "ok", "service": "rooms"}
-
+# -------------------------------
+# API endpoints
+# -------------------------------
 
 @app.post(
     "/api/rooms",
@@ -95,7 +136,14 @@ def create_room(room: RoomCreate, db: Session = Depends(get_db)) -> RoomResponse
     db.add(db_room)
     db.commit()
     db.refresh(db_room)
-    cache_invalidate("rooms:list")
+
+    audit_logger.info(
+        "CREATE room id=%s name=%s location=%s capacity=%s",
+        db_room.id,
+        db_room.name,
+        getattr(db_room, "location", None),
+        getattr(db_room, "capacity", None),
+    )
 
     return RoomResponse.model_validate(db_room)
 
@@ -114,16 +162,11 @@ def list_rooms(db: Session = Depends(get_db)) -> list[RoomResponse]:
     Returns:
         list[RoomResponse]: A list of all rooms available in the database.
     """
-    cache_key = "rooms:list"
-    cached = cache_get(cache_key)
-
-    if cached is not None:
-        print("⚡ rooms:list cache HIT")
-        return cached
-
-    print("🐢 rooms:list cache MISS")
     rooms = db.query(models.Room).all()
-    rooms_data = [RoomResponse.model_validate(r) for r in rooms]
 
-    cache_set(cache_key, rooms_data)
-    return rooms_data
+    audit_logger.info(
+        "LIST rooms count=%s",
+        len(rooms),
+    )
+
+    return [RoomResponse.model_validate(r) for r in rooms]

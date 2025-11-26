@@ -23,13 +23,60 @@ Authentication & Authorization (Part 12)
 from datetime import datetime
 from typing import List, Optional
 
-import os, json, pika, threading
-from pydantic import BaseModel, Field, field_validator
-from fastapi import FastAPI, HTTPException, Depends, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+import logging
+import os
+import time
+from logging.handlers import RotatingFileHandler
 
-from . import models
-from .database import engine
+from fastapi import FastAPI, HTTPException, Depends, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.security import OAuth2PasswordBearer
+from pydantic import BaseModel, Field, field_validator
+
+from .exception_handlers import (
+    validation_exception_handler,
+    general_exception_handler,
+)
+
+# -------------------------------
+# Audit logger setup (Part II - Advanced Security: Auditing & Logging)
+# -------------------------------
+
+def get_audit_logger() -> logging.Logger:
+    """
+    Configure and return a logger that writes audit events for
+    the Reviews service into <project_root>/logs/reviews_audit.log.
+    """
+    logger = logging.getLogger("reviews_audit")
+    if logger.handlers:
+        # Already configured (avoid adding handlers twice in reloads)
+        return logger
+
+    logger.setLevel(logging.INFO)
+
+    # Project root: two levels up from this file
+    # services/reviews_service/main.py -> services -> project_root
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    logs_dir = os.path.join(base_dir, "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+
+    log_path = os.path.join(logs_dir, "reviews_audit.log")
+    handler = RotatingFileHandler(log_path, maxBytes=1_000_000, backupCount=3)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+    return logger
+
+
+audit_logger = get_audit_logger()
+
+
+# -------------------------------
+# FastAPI application
+# -------------------------------
 
 app = FastAPI(
     title="Reviews Service",
@@ -37,34 +84,68 @@ app = FastAPI(
     description="Handles room reviews for the Smart Meeting Room system.",
 )
 
-RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "rabbitmq")
+# Global exception handlers (Part 7 – Advanced Development Practices)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
 
-bearer_scheme = HTTPBearer(auto_error=True)
 
-def get_current_username(
-    creds: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-) -> str:
+# Auditing middleware (Part II – Auditing & Logging)
+@app.middleware("http")
+async def audit_log_middleware(request: Request, call_next):
     """
-    Extract the username from the Authorization header.
-
-    Expected header:
-        Authorization: Bearer <username>
-
-    Returns:
-        str: authenticated username
+    Middleware that logs each HTTP request with method, path, user,
+    status code, and processing time.
     """
-    token = creds.credentials.strip()
+    start = time.perf_counter()
+    auth_header = request.headers.get("authorization", "")
+    username = "anonymous"
+    if auth_header.lower().startswith("bearer "):
+        username = auth_header.split(" ", 1)[1].strip() or "anonymous"
+
+    response = await call_next(request)
+    duration_ms = (time.perf_counter() - start) * 1000
+
+    audit_logger.info(
+        "method=%s path=%s user=%s status=%s duration_ms=%.2f",
+        request.method,
+        request.url.path,
+        username,
+        response.status_code,
+        duration_ms,
+    )
+
+    return response
+
+
+# -------------------------------
+# Authentication helper
+# -------------------------------
+
+# In this project, the Users Service issues tokens where the token value is
+# simply the username. We treat that as the authenticated identity.
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
+
+
+async def get_current_username(token: str = Depends(oauth2_scheme)) -> str:
+    """
+    Extract the current username from the bearer token.
+
+    For this assignment, the token itself is assumed to be the username;
+    in a real-world application it would be a signed JWT that we would
+    decode and validate.
+    """
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid bearer token.",
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
         )
     return token
 
 
-@app.get("/health")
-def health_check():
-    return {"status": "ok", "service": "reviews"}
+# -------------------------------
+# Pydantic schemas
+# -------------------------------
 
 class ReviewCreate(BaseModel):
     """
@@ -92,16 +173,14 @@ class ReviewCreate(BaseModel):
     def sanitize_comment(cls, value: Optional[str]) -> Optional[str]:
         """
         Strip leading/trailing whitespace and reject obviously dangerous patterns.
-
         This is not a replacement for parameterized queries, but adds a layer
         of defense against naive SQL injection attempts in free-text fields.
         """
         if value is None:
             return value
-
         cleaned = value.strip()
         lowered = cleaned.lower()
-
+        # Very simple blacklist of suspicious SQL tokens/sequences
         dangerous_tokens = [
             "--",
             ";--",
@@ -120,7 +199,6 @@ class ReviewCreate(BaseModel):
         for token in dangerous_tokens:
             if token in lowered:
                 raise ValueError("Comment contains disallowed characters or patterns.")
-
         return cleaned
 
 
@@ -193,6 +271,11 @@ class ReviewResponse(BaseModel):
     created_at: datetime
 
 
+# -------------------------------
+# In-memory storage
+# -------------------------------
+
+# In a real deployment this would be backed by a database.
 reviews: List[ReviewResponse] = []
 _next_review_id: int = 1
 
@@ -216,33 +299,9 @@ def get_review_or_404(review_id: int) -> ReviewResponse:
     raise HTTPException(status_code=404, detail="Review not found")
 
 
-def start_booking_consumer():
-    try:
-        connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=RABBITMQ_HOST)
-        )
-        channel = connection.channel()
-        channel.queue_declare(queue="booking_created", durable=True)
-
-        def callback(ch, method, properties, body):
-            data = json.loads(body)
-            print("📩 Reviews-service received booking_created event:", data)
-            ch.basic_ack(delivery_tag=method.delivery_tag)
-
-        channel.basic_qos(prefetch_count=1)
-        channel.basic_consume(queue="booking_created", on_message_callback=callback)
-
-        print("🚀 Reviews-service waiting for booking_created events...")
-        channel.start_consuming()
-
-    except Exception as e:
-        print("❌ Reviews-service consumer error:", repr(e))
-
-
-@app.on_event("startup")
-def startup_event():
-    thread = threading.Thread(target=start_booking_consumer, daemon=True)
-    thread.start()
+# -------------------------------
+# API endpoints
+# -------------------------------
 
 @app.post("/api/rooms/{room_id}/reviews", response_model=ReviewResponse, status_code=201)
 async def create_review(

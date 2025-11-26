@@ -80,11 +80,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging.handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">RotatingFileHandler</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RequestValidationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">starlette.requests</span><span class="w"> </span><span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">engine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>  <span class="c1"># kept for consistency, even if not used directly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">engine</span>  <span class="c1"># kept for consistency, even if not used directly</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
@@ -93,6 +100,83 @@
     <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Handles creation and management of room bookings.&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+
+<span class="c1"># -------------------------------</span>
+<span class="c1"># Exception handlers (Task 7)</span>
+<span class="c1"># -------------------------------</span>
+
+<div class="viewcode-block" id="validation_exception_handler">
+<a class="viewcode-back" href="../../api/bookings_service.html#bookings_service.main.validation_exception_handler">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">exception_handler</span><span class="p">(</span><span class="n">RequestValidationError</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">validation_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">RequestValidationError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle validation errors in a consistent JSON format.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span>
+        <span class="n">status_code</span><span class="o">=</span><span class="mi">422</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;Invalid request payload.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;errors&quot;</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">errors</span><span class="p">(),</span>
+        <span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="general_exception_handler">
+<a class="viewcode-back" href="../../api/bookings_service.html#bookings_service.main.general_exception_handler">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">exception_handler</span><span class="p">(</span><span class="ne">Exception</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">general_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Catch-all handler for unexpected server errors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span>
+        <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;Internal server error.&quot;</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># -------------------------------</span>
+<span class="c1"># Audit logger setup (Task 2)</span>
+<span class="c1"># -------------------------------</span>
+
+<div class="viewcode-block" id="get_audit_logger">
+<a class="viewcode-back" href="../../api/bookings_service.html#bookings_service.main.get_audit_logger">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_audit_logger</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configure and return a logger that writes audit events for</span>
+<span class="sd">    the Bookings service into logs/bookings_audit.log.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;bookings_audit&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+        <span class="c1"># Already configured (avoid adding handlers twice in reloads)</span>
+        <span class="k">return</span> <span class="n">logger</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="c1"># Project root: go three levels up from this file</span>
+    <span class="n">base_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+    <span class="n">logs_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">logs_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">log_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">logs_dir</span><span class="p">,</span> <span class="s2">&quot;bookings_audit.log&quot;</span><span class="p">)</span>
+    <span class="n">handler</span> <span class="o">=</span> <span class="n">RotatingFileHandler</span><span class="p">(</span><span class="n">log_path</span><span class="p">,</span> <span class="n">maxBytes</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">,</span> <span class="n">backupCount</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">logger</span></div>
+
+
+
+<span class="n">audit_logger</span> <span class="o">=</span> <span class="n">get_audit_logger</span><span class="p">()</span>
+
+
+<span class="c1"># -------------------------------</span>
+<span class="c1"># Pydantic schemas</span>
+<span class="c1"># -------------------------------</span>
 
 <div class="viewcode-block" id="BookingCreate">
 <a class="viewcode-back" href="../../api/bookings_service.html#bookings_service.main.BookingCreate">[docs]</a>
@@ -158,6 +242,10 @@
 <span class="n">next_booking_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 
 
+<span class="c1"># -------------------------------</span>
+<span class="c1"># Helper functions</span>
+<span class="c1"># -------------------------------</span>
+
 <div class="viewcode-block" id="get_booking_or_404">
 <a class="viewcode-back" href="../../api/bookings_service.html#bookings_service.main.get_booking_or_404">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_booking_or_404</span><span class="p">(</span><span class="n">booking_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BookingResponse</span><span class="p">:</span>
@@ -179,6 +267,10 @@
     <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Booking not found&quot;</span><span class="p">)</span></div>
 
 
+
+<span class="c1"># -------------------------------</span>
+<span class="c1"># Base API endpoints</span>
+<span class="c1"># -------------------------------</span>
 
 <div class="viewcode-block" id="list_bookings">
 <a class="viewcode-back" href="../../api/bookings_service.html#bookings_service.main.list_bookings">[docs]</a>
@@ -231,6 +323,17 @@
     <span class="p">)</span>
     <span class="n">next_booking_id</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="n">bookings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">booking</span><span class="p">)</span>
+
+    <span class="c1"># Audit logging (Task 2)</span>
+    <span class="n">audit_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;CREATE booking id=</span><span class="si">%s</span><span class="s2"> room_id=</span><span class="si">%s</span><span class="s2"> user=</span><span class="si">%s</span><span class="s2"> start=</span><span class="si">%s</span><span class="s2"> end=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">room_id</span><span class="p">,</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+    <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">booking</span></div>
 
 
@@ -292,6 +395,17 @@
     <span class="k">if</span> <span class="n">payload</span><span class="o">.</span><span class="n">purpose</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">booking</span><span class="o">.</span><span class="n">purpose</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">purpose</span>
 
+    <span class="c1"># Audit logging (Task 2)</span>
+    <span class="n">audit_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;UPDATE booking id=</span><span class="si">%s</span><span class="s2"> room_id=</span><span class="si">%s</span><span class="s2"> user=</span><span class="si">%s</span><span class="s2"> start=</span><span class="si">%s</span><span class="s2"> end=</span><span class="si">%s</span><span class="s2"> purpose=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">room_id</span><span class="p">,</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">purpose</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">booking</span></div>
 
 
@@ -314,7 +428,65 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">booking</span> <span class="o">=</span> <span class="n">get_booking_or_404</span><span class="p">(</span><span class="n">booking_id</span><span class="p">)</span>
     <span class="n">bookings</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">booking</span><span class="p">)</span>
+
+    <span class="c1"># Audit logging (Task 2)</span>
+    <span class="n">audit_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;DELETE booking id=</span><span class="si">%s</span><span class="s2"> room_id=</span><span class="si">%s</span><span class="s2"> user=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">room_id</span><span class="p">,</span>
+        <span class="n">booking</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Booking cancelled successfully&quot;</span><span class="p">,</span> <span class="s2">&quot;booking_id&quot;</span><span class="p">:</span> <span class="n">booking_id</span><span class="p">}</span></div>
+
+
+
+<span class="c1"># ------------------------------</span>
+<span class="c1"># API v1 versioned endpoints (Task 7)</span>
+<span class="c1"># ------------------------------</span>
+
+<div class="viewcode-block" id="list_bookings_v1">
+<a class="viewcode-back" href="../../api/bookings_service.html#bookings_service.main.list_bookings_v1">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/api/v1/bookings&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">List</span><span class="p">[</span><span class="n">BookingResponse</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">list_bookings_v1</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BookingResponse</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API v1: List all bookings (same logic as /api/bookings).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">list_bookings</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="create_booking_v1">
+<a class="viewcode-back" href="../../api/bookings_service.html#bookings_service.main.create_booking_v1">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/api/v1/bookings&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">BookingResponse</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_booking_v1</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="n">BookingCreate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BookingResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API v1: Create a new booking (same logic as /api/bookings).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">create_booking</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_booking_v1">
+<a class="viewcode-back" href="../../api/bookings_service.html#bookings_service.main.get_booking_v1">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/api/v1/bookings/</span><span class="si">{booking_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">BookingResponse</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_booking_v1</span><span class="p">(</span><span class="n">booking_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BookingResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API v1: Get a single booking by ID.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">get_booking</span><span class="p">(</span><span class="n">booking_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="update_booking_v1">
+<a class="viewcode-back" href="../../api/bookings_service.html#bookings_service.main.update_booking_v1">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;/api/v1/bookings/</span><span class="si">{booking_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">BookingResponse</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_booking_v1</span><span class="p">(</span><span class="n">booking_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">BookingUpdate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BookingResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API v1: Update an existing booking.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">update_booking</span><span class="p">(</span><span class="n">booking_id</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="delete_booking_v1">
+<a class="viewcode-back" href="../../api/bookings_service.html#bookings_service.main.delete_booking_v1">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;/api/v1/bookings/</span><span class="si">{booking_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">delete_booking_v1</span><span class="p">(</span><span class="n">booking_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;API v1: Delete (cancel) a booking.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">delete_booking</span><span class="p">(</span><span class="n">booking_id</span><span class="p">)</span></div>
 
 </pre></div>
 

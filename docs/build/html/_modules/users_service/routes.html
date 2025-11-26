@@ -71,24 +71,128 @@
   <h1>Source code for users_service.routes</h1><div class="highlight"><pre>
 <span></span><span class="c1"># services/users_service/routes.py</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">HTTPException</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">status</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.security</span><span class="w"> </span><span class="kn">import</span> <span class="n">OAuth2PasswordBearer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.exc</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegrityError</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.schemas</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserCreate</span><span class="p">,</span> <span class="n">UserResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schemas</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserCreate</span><span class="p">,</span> <span class="n">UserLogin</span><span class="p">,</span> <span class="n">UserResponse</span><span class="p">,</span> <span class="n">Token</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_db</span>
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;/api/users&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;users&quot;</span><span class="p">])</span>
+
+<span class="c1"># In this educational project we will use a very simple token scheme:</span>
+<span class="c1"># - When the user logs in successfully, we return a &quot;token&quot; that is just</span>
+<span class="c1">#   their username.</span>
+<span class="c1"># - Other services can treat &quot;access_token&quot; as the authenticated username.</span>
+<span class="n">oauth2_scheme</span> <span class="o">=</span> <span class="n">OAuth2PasswordBearer</span><span class="p">(</span><span class="n">tokenUrl</span><span class="o">=</span><span class="s2">&quot;/api/users/login&quot;</span><span class="p">)</span>
+
+<span class="c1"># Simple salted password hashing (for assignment/demo purposes)</span>
+<span class="n">PASSWORD_SALT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;USER_PASSWORD_SALT&quot;</span><span class="p">,</span> <span class="s2">&quot;change-me-in-production&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="hash_password">
+<a class="viewcode-back" href="../../api/users_service.html#users_service.routes.hash_password">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">hash_password</span><span class="p">(</span><span class="n">raw_password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hash a plaintext password using SHA-256 with a static salt.</span>
+
+<span class="sd">    In a real production system, you would use a dedicated password</span>
+<span class="sd">    hashing library (e.g., bcrypt/argon2) with per-user salts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">PASSWORD_SALT</span> <span class="o">+</span> <span class="n">raw_password</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="authenticate_user">
+<a class="viewcode-back" href="../../api/users_service.html#users_service.routes.authenticate_user">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">authenticate_user</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether a user with the given username/password exists.</span>
+
+<span class="sd">    Returns the User object if authentication succeeds, or None otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">username</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Compare hashed password with stored value</span>
+    <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">!=</span> <span class="n">hash_password</span><span class="p">(</span><span class="n">password</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">user</span></div>
+
+
+
+<div class="viewcode-block" id="get_current_user">
+<a class="viewcode-back" href="../../api/users_service.html#users_service.routes.get_current_user">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_current_user</span><span class="p">(</span>
+    <span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">oauth2_scheme</span><span class="p">),</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve the currently authenticated user from the access token.</span>
+
+<span class="sd">    For this project, the token is simply the username; in a real system,</span>
+<span class="sd">    this would be a signed JWT or similar.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">token</span>  <span class="c1"># token is just the username in this simplified design</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="n">username</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+            <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_401_UNAUTHORIZED</span><span class="p">,</span>
+            <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Invalid authentication credentials&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;WWW-Authenticate&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">user</span></div>
+
+
+
+<div class="viewcode-block" id="get_current_admin">
+<a class="viewcode-back" href="../../api/users_service.html#users_service.routes.get_current_admin">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_current_admin</span><span class="p">(</span>
+    <span class="n">current_user</span><span class="p">:</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_current_user</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Ensure that the current user has an admin-level role.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">current_user</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="s2">&quot;admin&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+            <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_403_FORBIDDEN</span><span class="p">,</span>
+            <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Not enough privileges&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">current_user</span></div>
+
 
 
 <div class="viewcode-block" id="create_user">
 <a class="viewcode-back" href="../../api/users_service.html#users_service.routes.create_user">[docs]</a>
 <span class="nd">@router</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">UserResponse</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">201</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n">UserCreate</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Register a new user account.</span>
+
+<span class="sd">    The password is hashed before storage for this assignment to avoid</span>
+<span class="sd">    keeping plaintext credentials. In a production system you would use</span>
+<span class="sd">    a stronger password hashing algorithm (e.g. bcrypt/argon2).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hashed_pw</span> <span class="o">=</span> <span class="n">hash_password</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+
     <span class="n">db_user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="p">(</span>
         <span class="n">username</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
-        <span class="n">password</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>  <span class="c1"># (in a real app you’d hash this)</span>
+        <span class="n">password</span><span class="o">=</span><span class="n">hashed_pw</span><span class="p">,</span>
         <span class="n">role</span><span class="o">=</span><span class="s2">&quot;regular&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">db</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">db_user</span><span class="p">)</span>
@@ -96,7 +200,6 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
     <span class="k">except</span> <span class="n">IntegrityError</span><span class="p">:</span>
-        <span class="c1"># Duplicate username → rollback and return existing user instead of crashing</span>
         <span class="n">db</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
         <span class="n">existing</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="p">)</span>
@@ -105,18 +208,50 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">existing</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">existing</span>
-
-        <span class="c1"># Fallback: something else went wrong with the constraint</span>
         <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Username already exists&quot;</span><span class="p">)</span>
 
     <span class="n">db</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">db_user</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">db_user</span></div>
 
 
+
+<div class="viewcode-block" id="login">
+<a class="viewcode-back" href="../../api/users_service.html#users_service.routes.login">[docs]</a>
+<span class="nd">@router</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">Token</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">login</span><span class="p">(</span><span class="n">user</span><span class="p">:</span> <span class="n">UserLogin</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Authenticate a user and return a simple bearer token.</span>
+
+<span class="sd">    The returned access_token is just the username, which is sufficient for</span>
+<span class="sd">    demonstrating authentication and authorization in this project.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db_user</span> <span class="o">=</span> <span class="n">authenticate_user</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">db_user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+            <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_401_UNAUTHORIZED</span><span class="p">,</span>
+            <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Incorrect username or password&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;WWW-Authenticate&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Token</span><span class="p">(</span>
+        <span class="n">access_token</span><span class="o">=</span><span class="n">db_user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+        <span class="n">token_type</span><span class="o">=</span><span class="s2">&quot;bearer&quot;</span><span class="p">,</span>
+        <span class="n">role</span><span class="o">=</span><span class="n">db_user</span><span class="o">.</span><span class="n">role</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="list_users">
 <a class="viewcode-back" href="../../api/users_service.html#users_service.routes.list_users">[docs]</a>
 <span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="nb">list</span><span class="p">[</span><span class="n">UserResponse</span><span class="p">])</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">list_users</span><span class="p">(</span><span class="n">db</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    List all registered users.</span>
+
+<span class="sd">    For this assignment, this endpoint remains open so existing tests</span>
+<span class="sd">    continue to work. Authentication and authorization are demonstrated</span>
+<span class="sd">    on the reviews service.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">users</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">users</span></div>
 

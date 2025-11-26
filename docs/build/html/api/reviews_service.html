@@ -53,11 +53,13 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-reviews_service.main">reviews_service.main module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#authentication-authorization-part-12">Authentication &amp; Authorization (Part 12)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.ReviewCreate"><code class="docutils literal notranslate"><span class="pre">ReviewCreate</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.ReviewResponse"><code class="docutils literal notranslate"><span class="pre">ReviewResponse</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.ReviewUpdate"><code class="docutils literal notranslate"><span class="pre">ReviewUpdate</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.create_review"><code class="docutils literal notranslate"><span class="pre">create_review()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.delete_review"><code class="docutils literal notranslate"><span class="pre">delete_review()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.get_current_username"><code class="docutils literal notranslate"><span class="pre">get_current_username()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.get_review_or_404"><code class="docutils literal notranslate"><span class="pre">get_review_or_404()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.list_room_reviews"><code class="docutils literal notranslate"><span class="pre">list_room_reviews()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#reviews_service.main.update_review"><code class="docutils literal notranslate"><span class="pre">update_review()</span></code></a></li>
@@ -115,16 +117,37 @@
 <p>Reviews Service</p>
 <p>This module defines the FastAPI service responsible for handling room reviews
 in the Smart Meeting Room system. It exposes endpoints to create, list,
-update, and delete reviews associated with room bookings.</p>
+update, and delete reviews associated with room bookings, with input
+validation, basic sanitization, and simple token-based authentication.</p>
+<section id="authentication-authorization-part-12">
+<h3>Authentication &amp; Authorization (Part 12)<a class="headerlink" href="#authentication-authorization-part-12" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>We assume there is a separate Users Service that issues bearer tokens
+at POST /api/users/login.</p></li>
+<li><p>In this project, the access token is simply the username.</p></li>
+<li><p>Only authenticated users (i.e. requests with a valid Authorization header)
+can create, update, or delete reviews.</p></li>
+<li><dl class="simple">
+<dt>Additionally:</dt><dd><ul>
+<li><p>When creating a review, the username in the payload must match
+the authenticated username.</p></li>
+<li><p>When updating or deleting a review, only the user who created the
+review is allowed to modify/delete it.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
 <dl class="py class">
 <dt class="sig sig-object py" id="reviews_service.main.ReviewCreate">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">ReviewCreate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rating</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ge</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">ge</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Le</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">le</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">5</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reviews_service/main.html#ReviewCreate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.ReviewCreate" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">ReviewCreate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">MinLen</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">min_length</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">3</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">MaxLen</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">max_length</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">30</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">_PydanticGeneralMetadata</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="s"><span class="pre">'^[A-Za-z0-9_]+$'</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rating</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ge</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">ge</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Le</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">le</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">5</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">MaxLen</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">max_length</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">500</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Gt</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">gt</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reviews_service/main.html#ReviewCreate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.ReviewCreate" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>Schema for creating a new review.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="reviews_service.main.ReviewCreate.username">
 <span class="sig-name descname"><span class="pre">username</span></span><a class="headerlink" href="#reviews_service.main.ReviewCreate.username" title="Link to this definition"></a></dt>
-<dd><p>Username of the reviewer.</p>
+<dd><p>Username of the reviewer (alphanumeric + underscore, 3–30 chars).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -146,7 +169,7 @@ update, and delete reviews associated with room bookings.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="reviews_service.main.ReviewCreate.comment">
 <span class="sig-name descname"><span class="pre">comment</span></span><a class="headerlink" href="#reviews_service.main.ReviewCreate.comment" title="Link to this definition"></a></dt>
-<dd><p>Optional free-text comment about the room/booking.</p>
+<dd><p>Optional free-text comment about the room/booking (max 500 chars).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str | None</p>
@@ -157,7 +180,7 @@ update, and delete reviews associated with room bookings.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="reviews_service.main.ReviewCreate.booking_id">
 <span class="sig-name descname"><span class="pre">booking_id</span></span><a class="headerlink" href="#reviews_service.main.ReviewCreate.booking_id" title="Link to this definition"></a></dt>
-<dd><p>Identifier of the booking this review is linked to.</p>
+<dd><p>Identifier of the booking this review is linked to (must be positive).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
@@ -185,6 +208,14 @@ update, and delete reviews associated with room bookings.</p>
 <dt class="sig sig-object py" id="id2">
 <span class="sig-name descname"><span class="pre">rating</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewCreate.sanitize_comment">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sanitize_comment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#ReviewCreate.sanitize_comment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.ReviewCreate.sanitize_comment" title="Link to this definition"></a></dt>
+<dd><p>Strip leading/trailing whitespace and reject obviously dangerous patterns.</p>
+<p>This is not a replacement for parameterized queries, but adds a layer
+of defense against naive SQL injection attempts in free-text fields.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id3">
@@ -320,7 +351,7 @@ update, and delete reviews associated with room bookings.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="reviews_service.main.ReviewUpdate">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">ReviewUpdate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">rating</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ge</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">ge</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Le</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">le</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">5</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reviews_service/main.html#ReviewUpdate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.ReviewUpdate" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">ReviewUpdate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">rating</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ge</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">ge</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Le</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">le</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">5</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotated</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">MaxLen</span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">max_length</span></span><span class="o"><span class="pre">=</span></span><span class="m"><span class="pre">500</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reviews_service/main.html#ReviewUpdate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.ReviewUpdate" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>Schema for updating an existing review.</p>
 <dl class="py attribute">
@@ -337,7 +368,7 @@ update, and delete reviews associated with room bookings.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="reviews_service.main.ReviewUpdate.comment">
 <span class="sig-name descname"><span class="pre">comment</span></span><a class="headerlink" href="#reviews_service.main.ReviewUpdate.comment" title="Link to this definition"></a></dt>
-<dd><p>Optional new comment text to replace the old one.</p>
+<dd><p>Optional new comment text (max 500 chars) to replace the old one.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str | None</p>
@@ -361,20 +392,32 @@ update, and delete reviews associated with room bookings.</p>
 <span class="sig-name descname"><span class="pre">rating</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id12" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="reviews_service.main.ReviewUpdate.sanitize_comment">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sanitize_comment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#ReviewUpdate.sanitize_comment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.ReviewUpdate.sanitize_comment" title="Link to this definition"></a></dt>
+<dd><p>Apply the same sanitization rules as in ReviewCreate for updated comments.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="reviews_service.main.create_review">
-<span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">create_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#reviews_service.main.ReviewCreate" title="reviews_service.main.ReviewCreate"><span class="pre">ReviewCreate</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse"><span class="pre">ReviewResponse</span></a></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#create_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.create_review" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">create_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload:</span> <span class="pre">~reviews_service.main.ReviewCreate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_username:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_current_username&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope=None)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse"><span class="pre">ReviewResponse</span></a></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#create_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.create_review" title="Link to this definition"></a></dt>
 <dd><p>Create a new review for a given room.</p>
-<p>This endpoint records a review associated with a specific room and booking.
-It validates the rating range and stores the review in the in-memory list.</p>
+<dl class="simple">
+<dt>Authentication:</dt><dd><ul class="simple">
+<li><p>Requires a valid bearer token.</p></li>
+<li><p>The token (username) must match payload.username.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>room_id</strong> – Identifier of the room being reviewed.</p></li>
 <li><p><strong>payload</strong> – ReviewCreate object containing username, rating, comment,
 and booking identifier.</p></li>
+<li><p><strong>current_username</strong> – Injected from the bearer token by get_current_username.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -384,16 +427,32 @@ and creation timestamp.</p>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse">ReviewResponse</a></p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>HTTPException</strong> – 403 if the payload username does not match the</p></li>
+<li><p><strong>authenticated username.</strong> – </p></li>
+</ul>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="reviews_service.main.delete_review">
-<span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">delete_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#delete_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.delete_review" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">delete_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_username:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_current_username&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope=None)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#delete_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.delete_review" title="Link to this definition"></a></dt>
 <dd><p>Delete an existing review.</p>
+<dl class="simple">
+<dt>Authentication:</dt><dd><ul class="simple">
+<li><p>Requires a valid bearer token.</p></li>
+<li><p>Only the author of the review is allowed to delete it.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>review_id</strong> – Identifier of the review to delete.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>review_id</strong> – Identifier of the review to delete.</p></li>
+<li><p><strong>current_username</strong> – Injected from the bearer token.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A confirmation message including the identifier of the deleted review.</p>
@@ -402,9 +461,22 @@ and creation timestamp.</p>
 <dd class="field-odd"><p>dict</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>HTTPException</strong> – If the review does not exist.</p>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>404 if the review does not exist.
+    * 403 if the current user is not the author.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="reviews_service.main.get_current_username">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">get_current_username</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">Depends(dependency=&lt;fastapi.security.oauth2.OAuth2PasswordBearer</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope=None)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#get_current_username"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.get_current_username" title="Link to this definition"></a></dt>
+<dd><p>Extract the current username from the bearer token.</p>
+<p>For this assignment, the token itself is assumed to be the username;
+in a real-world application it would be a signed JWT that we would
+decode and validate.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -431,6 +503,8 @@ and creation timestamp.</p>
 <dt class="sig sig-object py" id="reviews_service.main.list_room_reviews">
 <span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">list_room_reviews</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse"><span class="pre">ReviewResponse</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#list_room_reviews"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.list_room_reviews" title="Link to this definition"></a></dt>
 <dd><p>List all reviews for a specific room.</p>
+<p>This endpoint is left open (no authentication) so that anyone can read
+reviews, but only authenticated users can create, update, or delete them.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>room_id</strong> – Identifier of the room whose reviews should be returned.</p>
@@ -446,13 +520,21 @@ and creation timestamp.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="reviews_service.main.update_review">
-<span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">update_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#reviews_service.main.ReviewUpdate" title="reviews_service.main.ReviewUpdate"><span class="pre">ReviewUpdate</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse"><span class="pre">ReviewResponse</span></a></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#update_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.update_review" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">reviews_service.main.</span></span><span class="sig-name descname"><span class="pre">update_review</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_id:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload:</span> <span class="pre">~reviews_service.main.ReviewUpdate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_username:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_current_username&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope=None)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse"><span class="pre">ReviewResponse</span></a></span></span><a class="reference internal" href="../_modules/reviews_service/main.html#update_review"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reviews_service.main.update_review" title="Link to this definition"></a></dt>
 <dd><p>Update the rating and/or comment of an existing review.</p>
+<dl class="simple">
+<dt>Authentication:</dt><dd><ul class="simple">
+<li><p>Requires a valid bearer token.</p></li>
+<li><p>Only the author of the review is allowed to update it.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>review_id</strong> – Identifier of the review that should be updated.</p></li>
 <li><p><strong>payload</strong> – ReviewUpdate object containing the new rating and/or comment.</p></li>
+<li><p><strong>current_username</strong> – Injected from the bearer token.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -462,7 +544,11 @@ and creation timestamp.</p>
 <dd class="field-odd"><p><a class="reference internal" href="#reviews_service.main.ReviewResponse" title="reviews_service.main.ReviewResponse">ReviewResponse</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>HTTPException</strong> – If the review does not exist.</p>
+<dd class="field-even"><p><strong>HTTPException</strong> – <ul class="simple">
+<li><p>404 if the review does not exist.
+    * 403 if the current user is not the author.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>

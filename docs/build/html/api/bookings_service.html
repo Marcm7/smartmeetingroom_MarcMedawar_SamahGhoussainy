@@ -56,11 +56,19 @@
 <li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.BookingResponse"><code class="docutils literal notranslate"><span class="pre">BookingResponse</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.BookingUpdate"><code class="docutils literal notranslate"><span class="pre">BookingUpdate</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.create_booking"><code class="docutils literal notranslate"><span class="pre">create_booking()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.create_booking_v1"><code class="docutils literal notranslate"><span class="pre">create_booking_v1()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.delete_booking"><code class="docutils literal notranslate"><span class="pre">delete_booking()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.delete_booking_v1"><code class="docutils literal notranslate"><span class="pre">delete_booking_v1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.general_exception_handler"><code class="docutils literal notranslate"><span class="pre">general_exception_handler()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.get_audit_logger"><code class="docutils literal notranslate"><span class="pre">get_audit_logger()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.get_booking"><code class="docutils literal notranslate"><span class="pre">get_booking()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.get_booking_or_404"><code class="docutils literal notranslate"><span class="pre">get_booking_or_404()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.get_booking_v1"><code class="docutils literal notranslate"><span class="pre">get_booking_v1()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.list_bookings"><code class="docutils literal notranslate"><span class="pre">list_bookings()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.list_bookings_v1"><code class="docutils literal notranslate"><span class="pre">list_bookings_v1()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.update_booking"><code class="docutils literal notranslate"><span class="pre">update_booking()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.update_booking_v1"><code class="docutils literal notranslate"><span class="pre">update_booking_v1()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bookings_service.main.validation_exception_handler"><code class="docutils literal notranslate"><span class="pre">validation_exception_handler()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-bookings_service">Module contents</a></li>
@@ -345,6 +353,12 @@ identifier and status.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.create_booking_v1">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">create_booking_v1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bookings_service.main.BookingCreate" title="bookings_service.main.BookingCreate"><span class="pre">BookingCreate</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse"><span class="pre">BookingResponse</span></a></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#create_booking_v1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.create_booking_v1" title="Link to this definition"></a></dt>
+<dd><p>API v1: Create a new booking (same logic as /api/bookings).</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="bookings_service.main.delete_booking">
 <span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">delete_booking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#delete_booking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.delete_booking" title="Link to this definition"></a></dt>
 <dd><p>Cancel (delete) an existing booking.</p>
@@ -362,6 +376,25 @@ identifier and status.</p>
 <dd class="field-even"><p><strong>HTTPException</strong> – If the booking does not exist.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.delete_booking_v1">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">delete_booking_v1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#delete_booking_v1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.delete_booking_v1" title="Link to this definition"></a></dt>
+<dd><p>API v1: Delete (cancel) a booking.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.general_exception_handler">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">general_exception_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Exception</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bookings_service/main.html#general_exception_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.general_exception_handler" title="Link to this definition"></a></dt>
+<dd><p>Catch-all handler for unexpected server errors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.get_audit_logger">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">get_audit_logger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Logger</span></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#get_audit_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.get_audit_logger" title="Link to this definition"></a></dt>
+<dd><p>Configure and return a logger that writes audit events for
+the Bookings service into logs/bookings_audit.log.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -405,6 +438,12 @@ identifier and status.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.get_booking_v1">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">get_booking_v1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse"><span class="pre">BookingResponse</span></a></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#get_booking_v1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.get_booking_v1" title="Link to this definition"></a></dt>
+<dd><p>API v1: Get a single booking by ID.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="bookings_service.main.list_bookings">
 <span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">list_bookings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse"><span class="pre">BookingResponse</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#list_bookings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.list_bookings" title="Link to this definition"></a></dt>
 <dd><p>List all bookings currently stored in the system.</p>
@@ -416,6 +455,12 @@ identifier and status.</p>
 <dd class="field-even"><p>List[<a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse">BookingResponse</a>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.list_bookings_v1">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">list_bookings_v1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse"><span class="pre">BookingResponse</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#list_bookings_v1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.list_bookings_v1" title="Link to this definition"></a></dt>
+<dd><p>API v1: List all bookings (same logic as /api/bookings).</p>
 </dd></dl>
 
 <dl class="py function">
@@ -441,6 +486,18 @@ ensuring that the resulting time interval remains valid.</p>
 <dd class="field-even"><p><strong>HTTPException</strong> – If the updated time interval is invalid or the booking does not exist.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.update_booking_v1">
+<span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">update_booking_v1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">booking_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#bookings_service.main.BookingUpdate" title="bookings_service.main.BookingUpdate"><span class="pre">BookingUpdate</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#bookings_service.main.BookingResponse" title="bookings_service.main.BookingResponse"><span class="pre">BookingResponse</span></a></span></span><a class="reference internal" href="../_modules/bookings_service/main.html#update_booking_v1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.update_booking_v1" title="Link to this definition"></a></dt>
+<dd><p>API v1: Update an existing booking.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bookings_service.main.validation_exception_handler">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bookings_service.main.</span></span><span class="sig-name descname"><span class="pre">validation_exception_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RequestValidationError</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bookings_service/main.html#validation_exception_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bookings_service.main.validation_exception_handler" title="Link to this definition"></a></dt>
+<dd><p>Handle validation errors in a consistent JSON format.</p>
 </dd></dl>
 
 </section>

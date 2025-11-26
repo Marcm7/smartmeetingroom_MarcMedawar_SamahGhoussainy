@@ -121,11 +121,19 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.create_booking"><code class="docutils literal notranslate"><span class="pre">create_booking()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.create_booking_v1"><code class="docutils literal notranslate"><span class="pre">create_booking_v1()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.delete_booking"><code class="docutils literal notranslate"><span class="pre">delete_booking()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.delete_booking_v1"><code class="docutils literal notranslate"><span class="pre">delete_booking_v1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.general_exception_handler"><code class="docutils literal notranslate"><span class="pre">general_exception_handler()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.get_audit_logger"><code class="docutils literal notranslate"><span class="pre">get_audit_logger()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.get_booking"><code class="docutils literal notranslate"><span class="pre">get_booking()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.get_booking_or_404"><code class="docutils literal notranslate"><span class="pre">get_booking_or_404()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.get_booking_v1"><code class="docutils literal notranslate"><span class="pre">get_booking_v1()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.list_bookings"><code class="docutils literal notranslate"><span class="pre">list_bookings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.list_bookings_v1"><code class="docutils literal notranslate"><span class="pre">list_bookings_v1()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.update_booking"><code class="docutils literal notranslate"><span class="pre">update_booking()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.update_booking_v1"><code class="docutils literal notranslate"><span class="pre">update_booking_v1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bookings_service.html#bookings_service.main.validation_exception_handler"><code class="docutils literal notranslate"><span class="pre">validation_exception_handler()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="bookings_service.html#module-bookings_service">Module contents</a></li>
@@ -138,6 +146,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="reviews_service.html#module-reviews_service.main">reviews_service.main module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reviews_service.html#authentication-authorization-part-12">Authentication &amp; Authorization (Part 12)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reviews_service.html#reviews_service.main.ReviewCreate"><code class="docutils literal notranslate"><span class="pre">ReviewCreate</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="reviews_service.html#reviews_service.main.ReviewCreate.username"><code class="docutils literal notranslate"><span class="pre">ReviewCreate.username</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reviews_service.html#reviews_service.main.ReviewCreate.rating"><code class="docutils literal notranslate"><span class="pre">ReviewCreate.rating</span></code></a></li>
@@ -147,6 +156,7 @@
 <li class="toctree-l4"><a class="reference internal" href="reviews_service.html#id1"><code class="docutils literal notranslate"><span class="pre">ReviewCreate.comment</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reviews_service.html#reviews_service.main.ReviewCreate.model_config"><code class="docutils literal notranslate"><span class="pre">ReviewCreate.model_config</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reviews_service.html#id2"><code class="docutils literal notranslate"><span class="pre">ReviewCreate.rating</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reviews_service.html#reviews_service.main.ReviewCreate.sanitize_comment"><code class="docutils literal notranslate"><span class="pre">ReviewCreate.sanitize_comment()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reviews_service.html#id3"><code class="docutils literal notranslate"><span class="pre">ReviewCreate.username</span></code></a></li>
 </ul>
 </li>
@@ -174,10 +184,12 @@
 <li class="toctree-l4"><a class="reference internal" href="reviews_service.html#id11"><code class="docutils literal notranslate"><span class="pre">ReviewUpdate.comment</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reviews_service.html#reviews_service.main.ReviewUpdate.model_config"><code class="docutils literal notranslate"><span class="pre">ReviewUpdate.model_config</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="reviews_service.html#id12"><code class="docutils literal notranslate"><span class="pre">ReviewUpdate.rating</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="reviews_service.html#reviews_service.main.ReviewUpdate.sanitize_comment"><code class="docutils literal notranslate"><span class="pre">ReviewUpdate.sanitize_comment()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="reviews_service.html#reviews_service.main.create_review"><code class="docutils literal notranslate"><span class="pre">create_review()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="reviews_service.html#reviews_service.main.delete_review"><code class="docutils literal notranslate"><span class="pre">delete_review()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reviews_service.html#reviews_service.main.get_current_username"><code class="docutils literal notranslate"><span class="pre">get_current_username()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="reviews_service.html#reviews_service.main.get_review_or_404"><code class="docutils literal notranslate"><span class="pre">get_review_or_404()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="reviews_service.html#reviews_service.main.list_room_reviews"><code class="docutils literal notranslate"><span class="pre">list_room_reviews()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="reviews_service.html#reviews_service.main.update_review"><code class="docutils literal notranslate"><span class="pre">update_review()</span></code></a></li>
@@ -233,7 +245,6 @@
 <li class="toctree-l2"><a class="reference internal" href="users_service.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="users_service.html#module-users_service.database">users_service.database module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.database.get_db"><code class="docutils literal notranslate"><span class="pre">get_db()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.database.init_db"><code class="docutils literal notranslate"><span class="pre">init_db()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="users_service.html#module-users_service.main">users_service.main module</a></li>
@@ -248,11 +259,23 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="users_service.html#module-users_service.routes">users_service.routes module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.routes.authenticate_user"><code class="docutils literal notranslate"><span class="pre">authenticate_user()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.routes.create_user"><code class="docutils literal notranslate"><span class="pre">create_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.routes.get_current_admin"><code class="docutils literal notranslate"><span class="pre">get_current_admin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.routes.get_current_user"><code class="docutils literal notranslate"><span class="pre">get_current_user()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.routes.hash_password"><code class="docutils literal notranslate"><span class="pre">hash_password()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.routes.list_users"><code class="docutils literal notranslate"><span class="pre">list_users()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.routes.login"><code class="docutils literal notranslate"><span class="pre">login()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="users_service.html#module-users_service.schemas">users_service.schemas module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.schemas.Token"><code class="docutils literal notranslate"><span class="pre">Token</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="users_service.html#users_service.schemas.Token.access_token"><code class="docutils literal notranslate"><span class="pre">Token.access_token</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="users_service.html#users_service.schemas.Token.model_config"><code class="docutils literal notranslate"><span class="pre">Token.model_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="users_service.html#users_service.schemas.Token.role"><code class="docutils literal notranslate"><span class="pre">Token.role</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="users_service.html#users_service.schemas.Token.token_type"><code class="docutils literal notranslate"><span class="pre">Token.token_type</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.schemas.UserBase"><code class="docutils literal notranslate"><span class="pre">UserBase</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="users_service.html#users_service.schemas.UserBase.model_config"><code class="docutils literal notranslate"><span class="pre">UserBase.model_config</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="users_service.html#users_service.schemas.UserBase.username"><code class="docutils literal notranslate"><span class="pre">UserBase.username</span></code></a></li>
@@ -261,6 +284,11 @@
 <li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.schemas.UserCreate"><code class="docutils literal notranslate"><span class="pre">UserCreate</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="users_service.html#users_service.schemas.UserCreate.model_config"><code class="docutils literal notranslate"><span class="pre">UserCreate.model_config</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="users_service.html#users_service.schemas.UserCreate.password"><code class="docutils literal notranslate"><span class="pre">UserCreate.password</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.schemas.UserLogin"><code class="docutils literal notranslate"><span class="pre">UserLogin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="users_service.html#users_service.schemas.UserLogin.model_config"><code class="docutils literal notranslate"><span class="pre">UserLogin.model_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="users_service.html#users_service.schemas.UserLogin.password"><code class="docutils literal notranslate"><span class="pre">UserLogin.password</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="users_service.html#users_service.schemas.UserResponse"><code class="docutils literal notranslate"><span class="pre">UserResponse</span></code></a><ul>

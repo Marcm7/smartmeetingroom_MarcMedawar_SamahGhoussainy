@@ -69,34 +69,77 @@
            <div itemprop="articleBody">
              
   <h1>Source code for users_service.schemas</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
 
 
 <div class="viewcode-block" id="UserBase">
 <a class="viewcode-back" href="../../api/users_service.html#users_service.schemas.UserBase">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserBase</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="n">username</span><span class="p">:</span> <span class="nb">str</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Common fields shared by all user-related schemas.&quot;&quot;&quot;</span>
+    <span class="n">username</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">min_length</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+        <span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;^[A-Za-z0-9_]+$&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Unique username (3–30 chars, letters/digits/underscore).&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="UserCreate">
 <a class="viewcode-back" href="../../api/users_service.html#users_service.schemas.UserCreate">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserCreate</span><span class="p">(</span><span class="n">UserBase</span><span class="p">):</span>
-    <span class="n">password</span><span class="p">:</span> <span class="nb">str</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Payload used when registering a new user.&quot;&quot;&quot;</span>
+    <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">min_length</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Plain-text password for this project (would be hashed in a real app).&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="UserLogin">
+<a class="viewcode-back" href="../../api/users_service.html#users_service.schemas.UserLogin">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserLogin</span><span class="p">(</span><span class="n">UserBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Payload used when authenticating an existing user.&quot;&quot;&quot;</span>
+    <span class="n">password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">min_length</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Password that must match the stored user password.&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="UserResponse">
 <a class="viewcode-back" href="../../api/users_service.html#users_service.schemas.UserResponse">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UserResponse</span><span class="p">(</span><span class="n">UserBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Representation of a user returned by the API.&quot;&quot;&quot;</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">role</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;regular&quot;</span>
 
 <div class="viewcode-block" id="UserResponse.Config">
 <a class="viewcode-back" href="../../api/users_service.html#users_service.schemas.UserResponse.Config">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
-        <span class="n">orm_mode</span> <span class="o">=</span> <span class="kc">True</span>   </div>
+        <span class="n">orm_mode</span> <span class="o">=</span> <span class="kc">True</span></div>
 </div>
+
+
+
+<div class="viewcode-block" id="Token">
+<a class="viewcode-back" href="../../api/users_service.html#users_service.schemas.Token">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Token</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Authentication token returned after a successful login.</span>
+
+<span class="sd">    access_token: A simple bearer token (here we use the username as token).</span>
+<span class="sd">    token_type: Usually &#39;bearer&#39;.</span>
+<span class="sd">    role: The role associated with the authenticated user.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">access_token</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">token_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bearer&quot;</span>
+    <span class="n">role</span><span class="p">:</span> <span class="nb">str</span></div>
 
 </pre></div>
 
