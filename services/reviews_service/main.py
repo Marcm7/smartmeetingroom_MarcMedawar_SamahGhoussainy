@@ -31,15 +31,16 @@ from logging.handlers import RotatingFileHandler
 from fastapi import FastAPI, HTTPException, Depends, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ValidationError
 
 from .exception_handlers import (
     validation_exception_handler,
+    pydantic_validation_exception_handler,
     general_exception_handler,
 )
 
 # -------------------------------
-# Audit logger setup (Part II - Advanced Security: Auditing & Logging)
+# Audit logger setup
 # -------------------------------
 
 def get_audit_logger() -> logging.Logger:
@@ -62,9 +63,7 @@ def get_audit_logger() -> logging.Logger:
 
     log_path = os.path.join(logs_dir, "reviews_audit.log")
     handler = RotatingFileHandler(log_path, maxBytes=1_000_000, backupCount=3)
-    formatter = logging.Formatter(
-        "%(asctime)s - %(levelname)s - %(message)s"
-    )
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
@@ -84,12 +83,13 @@ app = FastAPI(
     description="Handles room reviews for the Smart Meeting Room system.",
 )
 
-# Global exception handlers (Part 7 – Advanced Development Practices)
+# Global exception handlers
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(ValidationError, pydantic_validation_exception_handler)
 app.add_exception_handler(Exception, general_exception_handler)
 
 
-# Auditing middleware (Part II – Auditing & Logging)
+# Auditing middleware
 @app.middleware("http")
 async def audit_log_middleware(request: Request, call_next):
     """

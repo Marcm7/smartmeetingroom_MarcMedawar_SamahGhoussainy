@@ -6,3 +6,14 @@
 2025-11-26 22:53:13,978 - INFO - method=POST path=/api/rooms user=anonymous status=201 duration_ms=21.93
 2025-11-26 22:53:13,993 - INFO - LIST rooms count=9
 2025-11-26 22:53:13,995 - INFO - method=GET path=/api/rooms user=anonymous status=200 duration_ms=5.71
+2025-11-27 00:17:02,456 - INFO - CREATE room id=10 name=Conference Room A location=3rd floor - Building A capacity=10
+2025-11-27 00:17:02,460 - INFO - method=POST path=/api/rooms user=anonymous status=201 duration_ms=44.89
+2025-11-27 00:17:02,477 - INFO - LIST rooms count=10
+2025-11-27 00:17:02,480 - INFO - method=GET path=/api/rooms user=anonymous status=200 duration_ms=6.77
+2025-11-27 00:17:15,271 - INFO - CREATE room id=11 name=Conference Room A location=3rd floor - Building A capacity=10
+2025-11-27 00:17:15,274 - INFO - method=POST path=/api/rooms user=anonymous status=201 duration_ms=45.95
+2025-11-27 00:17:15,295 - INFO - LIST rooms count=11
+2025-11-27 00:17:15,299 - INFO - method=GET path=/api/rooms user=anonymous status=200 duration_ms=10.07
+2025-11-27 00:18:56,382 - INFO - method=POST path=/api/rooms user=samahhhh status=422 duration_ms=5.73
+2025-11-27 00:20:16,047 - INFO - LIST rooms count=11
+2025-11-27 00:20:16,049 - INFO - method=GET path=/api/rooms user=samahhhh status=200 duration_ms=12.35

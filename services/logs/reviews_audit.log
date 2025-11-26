@@ -1,2 +1,5 @@
 2025-11-26 22:52:59,499 - INFO - method=POST path=/api/rooms/1/reviews user=testuser status=201 duration_ms=1.81
 2025-11-26 22:53:13,946 - INFO - method=POST path=/api/rooms/1/reviews user=testuser status=201 duration_ms=1.43
+2025-11-27 00:17:02,395 - INFO - method=POST path=/api/rooms/1/reviews user=testuser status=201 duration_ms=2.94
+2025-11-27 00:17:15,210 - INFO - method=POST path=/api/rooms/1/reviews user=testuser status=201 duration_ms=2.78
+2025-11-27 00:20:45,339 - INFO - method=GET path=/api/rooms/1/reviews user=samahhhh status=200 duration_ms=3.34
