@@ -1,19 +1,26 @@
 services:
+  
   db:
     image: postgres:16
     container_name: smartmeetingroom-db
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
-    
-    
+    # Load secrets from .env.secrets into the container
+    env_file:
+      - .env.secrets
+
+    # Use those variables inside the container
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+
     ports:
       - "5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     restart: unless-stopped
+
+
     networks: [appnet]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U smartuser -d smartmeetingroom"]

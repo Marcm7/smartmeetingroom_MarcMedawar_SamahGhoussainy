@@ -1,8 +1,14 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from dotenv import load_dotenv
+
+# Load secrets from .env.secrets so DATABASE_URL comes from the secrets store
+load_dotenv(".env.secrets")
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./bookings.db")
+
+
 
 if DATABASE_URL.startswith("sqlite"):
     engine = create_engine(

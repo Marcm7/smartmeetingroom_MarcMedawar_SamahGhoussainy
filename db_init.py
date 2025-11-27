@@ -1,11 +1,18 @@
 import os
 from sqlalchemy import create_engine
+from dotenv import load_dotenv
+
+# Load secrets from .env.secrets (acts like a simple secrets manager)
+load_dotenv(".env.secrets")
 
 # 1) read DB url
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom"
+    "sqlite:///./smartmeetingroom.db"  # safe, non-secret fallback
 )
+
+
+
 
 print("DB URL =", DATABASE_URL)
 
