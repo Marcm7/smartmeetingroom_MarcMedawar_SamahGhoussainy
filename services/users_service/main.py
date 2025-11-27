@@ -110,5 +110,9 @@ async def audit_log_middleware(request: Request, call_next):
 # Routers
 # -------------------------------
 
-# Mount the users router so that all user endpoints are exposed under this app.
-app.include_router(users_router)
+# Expose legacy (unversioned) API: /api/users/...
+app.include_router(users_router, prefix="/api")
+
+# Expose versioned API: /api/v1/users/...
+app.include_router(users_router, prefix="/api/v1")
+

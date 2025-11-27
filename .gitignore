@@ -11,5 +11,6 @@ __pycache__/
 # Docker
 db_data/
 
+.env.secrets
 
 

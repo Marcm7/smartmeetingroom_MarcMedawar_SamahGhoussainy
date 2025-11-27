@@ -170,3 +170,28 @@ def list_rooms(db: Session = Depends(get_db)) -> list[RoomResponse]:
     )
 
     return [RoomResponse.model_validate(r) for r in rooms]
+
+
+@app.post(
+    "/api/v1/rooms",
+    response_model=RoomResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_room_v1(room: RoomCreate, db: Session = Depends(get_db)) -> RoomResponse:
+    """
+    API v1: Create a new room.
+    This is a versioned wrapper around the legacy /api/rooms endpoint.
+    """
+    return create_room(room, db)
+
+
+@app.get(
+    "/api/v1/rooms",
+    response_model=list[RoomResponse],
+)
+def list_rooms_v1(db: Session = Depends(get_db)) -> list[RoomResponse]:
+    """
+    API v1: List all rooms.
+    This is a versioned wrapper around the legacy /api/rooms endpoint.
+    """
+    return list_rooms(db)

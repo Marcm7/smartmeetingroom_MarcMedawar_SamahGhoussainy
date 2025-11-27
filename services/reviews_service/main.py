@@ -445,3 +445,51 @@ async def delete_review(
 
     reviews.remove(review)
     return {"message": "Review deleted successfully", "review_id": review_id}
+
+# -------- API v1 wrappers to ensure backward compatibility --------
+
+@app.post("/api/v1/rooms/{room_id}/reviews", response_model=ReviewResponse, status_code=201)
+def create_review_v1(
+    room_id: int,
+    review_in: ReviewCreate,
+    current_username: str = Depends(get_current_username),
+) -> ReviewResponse:
+    """
+    API v1: Create a review for a specific room.
+    Wrapper around the legacy /api/rooms/{room_id}/reviews endpoint.
+    """
+    return create_review(room_id, review_in, current_username)
+
+
+@app.get("/api/v1/rooms/{room_id}/reviews", response_model=List[ReviewResponse])
+def list_room_reviews_v1(room_id: int) -> List[ReviewResponse]:
+    """
+    API v1: List all reviews for a specific room.
+    Wrapper around the legacy /api/rooms/{room_id}/reviews endpoint.
+    """
+    return list_room_reviews(room_id)
+
+
+@app.put("/api/v1/reviews/{review_id}", response_model=ReviewResponse)
+def update_review_v1(
+    review_id: int,
+    review_in: ReviewUpdate,
+    current_username: str = Depends(get_current_username),
+) -> ReviewResponse:
+    """
+    API v1: Update an existing review.
+    Wrapper around the legacy /api/reviews/{review_id} endpoint.
+    """
+    return update_review(review_id, review_in, current_username)
+
+
+@app.delete("/api/v1/reviews/{review_id}")
+def delete_review_v1(
+    review_id: int,
+    current_username: str = Depends(get_current_username),
+):
+    """
+    API v1: Delete an existing review.
+    Wrapper around the legacy /api/reviews/{review_id} endpoint.
+    """
+    return delete_review(review_id, current_username)

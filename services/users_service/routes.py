@@ -11,7 +11,7 @@ from . import models
 from .schemas import UserCreate, UserLogin, UserResponse, Token
 from .database import get_db
 
-router = APIRouter(prefix="/api/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["users"])
 
 # In this educational project we will use a very simple token scheme:
 # - When the user logs in successfully, we return a "token" that is just
