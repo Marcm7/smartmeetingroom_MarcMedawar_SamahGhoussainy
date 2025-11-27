@@ -3,3 +3,12 @@
 2025-11-27 00:17:02,395 - INFO - method=POST path=/api/rooms/1/reviews user=testuser status=201 duration_ms=2.94
 2025-11-27 00:17:15,210 - INFO - method=POST path=/api/rooms/1/reviews user=testuser status=201 duration_ms=2.78
 2025-11-27 00:20:45,339 - INFO - method=GET path=/api/rooms/1/reviews user=samahhhh status=200 duration_ms=3.34
+2025-11-27 01:05:36,227 - INFO - method=POST path=/api/rooms/1/reviews user=samahhhh status=422 duration_ms=3.87
+2025-11-27 01:08:55,183 - INFO - method=POST path=/ user=samahhhh status=404 duration_ms=1.21
+2025-11-27 01:09:16,840 - INFO - method=POST path=/api/rooms/1/reviews user=samahhhh status=201 duration_ms=6.72
+2025-11-27 01:09:30,612 - INFO - method=POST path=/api/rooms/1/reviews user=anonymous status=401 duration_ms=1.18
+2025-11-27 01:09:48,897 - INFO - method=POST path=/api/rooms/1/reviews user=samahhhh status=403 duration_ms=2.04
+2025-11-27 01:10:25,267 - INFO - method=PUT path=/api/api/reviews/1 user=samahhhh status=404 duration_ms=0.44
+2025-11-27 01:10:52,996 - INFO - method=PUT path=/api/reviews/1 user=samahhhh status=200 duration_ms=2.50
+2025-11-27 01:29:16,330 - INFO - method=POST path=/api/rooms/1/reviews user=samahhhh status=201 duration_ms=3.36
+2025-11-27 01:29:43,213 - INFO - method=PUT path=/api/reviews/1 user=samahhhh status=200 duration_ms=1.43

@@ -8,3 +8,7 @@
 2025-11-27 00:17:15,189 - INFO - method=POST path=/api/bookings user=anonymous status=201 duration_ms=11.74
 2025-11-27 00:19:32,997 - INFO - method=POST path=/api/bookings user=samahhhh status=400 duration_ms=3.21
 2025-11-27 00:20:34,073 - INFO - method=GET path=/api/bookings user=samahhhh status=200 duration_ms=1.76
+2025-11-27 01:21:18,214 - INFO - CREATE booking id=1 room_id=1 user=samahhhh start=2025-01-01T10:00:00 end=2025-01-01T11:00:00
+2025-11-27 01:21:18,216 - INFO - method=POST path=/api/bookings user=samahhhh status=201 duration_ms=6.34
+2025-11-27 01:21:51,227 - INFO - method=POST path=/api/bookings user=samahhhh status=400 duration_ms=2.20
+2025-11-27 01:28:55,744 - INFO - method=POST path=/api/bookings user=samahhhh status=400 duration_ms=2.86

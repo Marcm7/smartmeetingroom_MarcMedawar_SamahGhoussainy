@@ -3,9 +3,12 @@ services:
     image: postgres:16
     container_name: smartmeetingroom-db
     environment:
-      POSTGRES_DB: smartmeetingroom
-      POSTGRES_USER: smartuser
-      POSTGRES_PASSWORD: smartpass
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    
+    
     ports:
       - "5433:5432"
     volumes:
@@ -24,7 +27,9 @@ services:
       dockerfile: Dockerfile.db_init
     container_name: db-init
     environment:
-      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
+      DATABASE_URL: ${DATABASE_URL}
+
+    
     depends_on:
       db:
         condition: service_healthy   # ✅ wait for DB really ready
@@ -52,7 +57,7 @@ services:
       dockerfile: services/users_service/Dockerfile
     container_name: users-service
     environment:
-      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
+      DATABASE_URL: ${DATABASE_URL}
     ports:
       - "8001:8000"
     depends_on:
@@ -68,9 +73,10 @@ services:
       dockerfile: services/rooms_service/Dockerfile
     container_name: rooms-service-1
     environment:
-      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
+      DATABASE_URL: ${DATABASE_URL}
     expose:
       - "8000"
+
     depends_on:
       db_init:
         condition: service_completed_successfully
@@ -83,9 +89,10 @@ services:
       dockerfile: services/rooms_service/Dockerfile
     container_name: rooms-service-2
     environment:
-      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
+      DATABASE_URL: ${DATABASE_URL}
     expose:
       - "8000"
+
     depends_on:
       db_init:
         condition: service_completed_successfully
@@ -112,8 +119,11 @@ services:
       dockerfile: services/bookings_service/Dockerfile
     container_name: bookings-service
     environment:
-      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
-      RABBITMQ_HOST: rabbitmq
+      DATABASE_URL: ${DATABASE_URL}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+
+
+
     ports:
       - "8003:8000"
     depends_on:
@@ -130,8 +140,11 @@ services:
       dockerfile: services/reviews_service/Dockerfile
     container_name: reviews-service
     environment:
-      DATABASE_URL: postgresql+psycopg2://smartuser:smartpass@db:5432/smartmeetingroom
-      RABBITMQ_HOST: rabbitmq
+      DATABASE_URL: ${DATABASE_URL}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+
+    
+    
     ports:
       - "8004:8000"
     depends_on:
@@ -141,6 +154,25 @@ services:
         condition: service_healthy
     restart: unless-stopped
     networks: [appnet]
+
+  # --------- NEW: global HTTPS reverse proxy ---------
+  nginx:
+    image: nginx:alpine
+    container_name: smartmeetingroom-nginx
+    depends_on:
+      - users_service
+      - rooms_service_1
+      - rooms_service_2
+      - bookings_service
+      - reviews_service
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx_https.conf:/etc/nginx/nginx.conf:ro    # <-- change to this
+      - ./nginx/certs:/etc/nginx/certs:ro
+    networks:
+      - appnet
+
 
 volumes:
   db_data:

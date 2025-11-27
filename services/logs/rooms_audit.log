@@ -17,3 +17,7 @@
 2025-11-27 00:18:56,382 - INFO - method=POST path=/api/rooms user=samahhhh status=422 duration_ms=5.73
 2025-11-27 00:20:16,047 - INFO - LIST rooms count=11
 2025-11-27 00:20:16,049 - INFO - method=GET path=/api/rooms user=samahhhh status=200 duration_ms=12.35
+2025-11-27 01:28:21,758 - INFO - CREATE room id=12 name=Conference A location=3rd floor capacity=10
+2025-11-27 01:28:21,761 - INFO - method=POST path=/api/rooms user=samahhhh status=201 duration_ms=37.58
+2025-11-27 01:28:33,488 - INFO - LIST rooms count=12
+2025-11-27 01:28:33,495 - INFO - method=GET path=/api/rooms user=samahhhh status=200 duration_ms=10.32
